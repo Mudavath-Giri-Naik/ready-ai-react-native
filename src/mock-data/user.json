@@ -1,6 +1,6 @@
 {
-  "id": "user-001",
-  "name": "Your Name",
+  "id": "user_001",
+  "name": "Rahul Sharma",
   "phone": "+91 98765 43210",
-  "avatarUrl": "https://i.pravatar.cc/150?img=47"
+  "avatarUrl": "../../assets/men_avatar.png"
 }

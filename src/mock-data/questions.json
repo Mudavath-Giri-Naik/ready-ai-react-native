@@ -2,11 +2,81 @@
   {
     "id": "q1",
     "questionNumber": 1,
-    "companyId": "1",
+    "companyId": "phonepe",
     "companyName": "PhonePe",
-    "companyLogoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/PhonePe_Logo.svg/512px-PhonePe_Logo.svg.png",
+    "companyLogoUrl": "https://www.google.com/s2/favicons?domain=phonepe.com&sz=256",
     "text": "API latency is variable & app is sluggish. How do you design UI safely?",
     "durationMinutes": 2,
-    "completedTodayCount": 2312
+    "completedTodayCount": 847
+  },
+  {
+    "id": "q2",
+    "questionNumber": 2,
+    "companyId": "amazon",
+    "companyName": "Amazon",
+    "companyLogoUrl": "https://www.google.com/s2/favicons?domain=amazon.in&sz=256",
+    "text": "Design a distributed rate limiter that works across multiple data centers.",
+    "durationMinutes": 3,
+    "completedTodayCount": 612
+  },
+  {
+    "id": "q3",
+    "questionNumber": 3,
+    "companyId": "google",
+    "companyName": "Google",
+    "companyLogoUrl": "https://www.google.com/s2/favicons?domain=google.com&sz=256",
+    "text": "How would you optimize a search autocomplete system for 1 billion users?",
+    "durationMinutes": 3,
+    "completedTodayCount": 1024
+  },
+  {
+    "id": "q4",
+    "questionNumber": 4,
+    "companyId": "microsoft",
+    "companyName": "Microsoft",
+    "companyLogoUrl": "https://www.google.com/s2/favicons?domain=microsoft.com&sz=256",
+    "text": "Walk me through how you would design a collaborative document editing system like Google Docs.",
+    "durationMinutes": 4,
+    "completedTodayCount": 439
+  },
+  {
+    "id": "q5",
+    "questionNumber": 5,
+    "companyId": "flipkart",
+    "companyName": "Flipkart",
+    "companyLogoUrl": "https://www.google.com/s2/favicons?domain=flipkart.com&sz=256",
+    "text": "How do you handle a flash sale with 10 million concurrent users hitting the checkout endpoint?",
+    "durationMinutes": 3,
+    "completedTodayCount": 728
+  },
+  {
+    "id": "q6",
+    "questionNumber": 6,
+    "companyId": "swiggy",
+    "companyName": "Swiggy",
+    "companyLogoUrl": "https://www.google.com/s2/favicons?domain=swiggy.com&sz=256",
+    "text": "Design a real-time order tracking system that updates delivery location every 5 seconds.",
+    "durationMinutes": 2,
+    "completedTodayCount": 563
+  },
+  {
+    "id": "q7",
+    "questionNumber": 7,
+    "companyId": "amazon",
+    "companyName": "Amazon",
+    "companyLogoUrl": "https://www.google.com/s2/favicons?domain=amazon.in&sz=256",
+    "text": "Tell me about a time you had to make a critical decision with incomplete information.",
+    "durationMinutes": 2,
+    "completedTodayCount": 891
+  },
+  {
+    "id": "q8",
+    "questionNumber": 8,
+    "companyId": "google",
+    "companyName": "Google",
+    "companyLogoUrl": "https://www.google.com/s2/favicons?domain=google.com&sz=256",
+    "text": "Given an array of integers, return indices of two numbers that add up to a target. Can you do it in O(n)?",
+    "durationMinutes": 2,
+    "completedTodayCount": 1342
   }
 ]

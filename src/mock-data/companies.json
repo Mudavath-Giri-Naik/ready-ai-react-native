@@ -1,7 +1,8 @@
 [
-  {
-    "id": "1",
-    "name": "PhonePe",
-    "logoUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/PhonePe_Logo.svg/512px-PhonePe_Logo.svg.png"
-  }
+  { "id": "phonepe", "name": "PhonePe", "logoUrl": "https://www.google.com/s2/favicons?domain=phonepe.com&sz=256" },
+  { "id": "amazon", "name": "Amazon", "logoUrl": "https://www.google.com/s2/favicons?domain=amazon.in&sz=256" },
+  { "id": "google", "name": "Google", "logoUrl": "https://www.google.com/s2/favicons?domain=google.com&sz=256" },
+  { "id": "microsoft", "name": "Microsoft", "logoUrl": "https://www.google.com/s2/favicons?domain=microsoft.com&sz=256" },
+  { "id": "flipkart", "name": "Flipkart", "logoUrl": "https://www.google.com/s2/favicons?domain=flipkart.com&sz=256" },
+  { "id": "swiggy", "name": "Swiggy", "logoUrl": "https://www.google.com/s2/favicons?domain=swiggy.com&sz=256" }
 ]
