@@ -2,7 +2,7 @@
 
 ## 🧠 Overview
 
-This project is a React Native implementation of the "Ready!" AI interview practice app.
+This  project is a React Native implementation of the "Ready!" AI interview practice app.
 
 The goal is to build a clean, scalable, and pixel-perfect UI based on the provided Figma design.
 
