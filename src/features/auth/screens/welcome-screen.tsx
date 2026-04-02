@@ -18,10 +18,9 @@ export const WelcomeScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
+      <View style={styles.logoContainer}>
         <AppLogo />
       </View>
-
       <View style={styles.content}>
         <Image
           source={welcomeGirl}
@@ -29,8 +28,8 @@ export const WelcomeScreen = () => {
           contentFit="contain"
           cachePolicy="memory-disk"
         />
-        <Text style={styles.tagline}>
-          Practice Top Interview{"\n"}
+        <Text style={styles.taglineTitle}>Practice Top Interview</Text>
+        <Text style={styles.taglineSubtitle}>
           Questions <Text style={styles.taglineHighlight}>with AI</Text>
         </Text>
       </View>
@@ -66,43 +65,64 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  header: {
-    alignItems: "center",
-    marginTop: spacing.xl,
+  logoContainer: {
+    position: "absolute",
+    top: 78,
+    left: 128,
+    width: 138,
+    height: 46,
   },
   content: {
-    flex: 1,
+    position: "absolute",
+    top: 232,
+    left: 21,
+    width: 348,
+    height: 330,
     alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: spacing.screenPadding,
   },
   avatar: {
-    width: 320,
-    height: 320,
-    marginBottom: spacing.xl,
+    width: 250,
+    height: 250,
+    marginBottom: 18,
   },
-  tagline: {
-    fontSize: typography.sizes.xl,
+  taglineTitle: {
+    width: 348,
+    height: 31,
+    fontSize: typography.sizes.xxl,
     fontFamily: typography.fonts.inter.semiBold,
     color: colors.textPrimary,
     textAlign: "center",
-    lineHeight: 30,
+    lineHeight: 24,
+    letterSpacing: -0.24,
+  },
+  taglineSubtitle: {
+    width: 348,
+    height: 31,
+    fontSize: typography.sizes.xxl,
+    fontFamily: typography.fonts.inter.semiBold,
+    color: colors.textPrimary,
+    textAlign: "center",
+    lineHeight: 24,
+    letterSpacing: -0.24,
   },
   taglineHighlight: {
     color: colors.primary,
   },
   footer: {
-    paddingHorizontal: spacing.screenPadding,
-    paddingBottom: spacing.xxl,
+    position: "absolute",
+    top: 670,
+    left: 24,
+    width: 345,
   },
   button: {
     backgroundColor: colors.buttonPrimary,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: spacing.m,
+    width: 345,
+    height: 58,
     borderRadius: spacing.inputRadius,
-    gap: spacing.s,
+    gap: 2,
     marginBottom: spacing.xl,
     borderBottomWidth: 4,
     borderBottomColor: colors.primaryDark,
