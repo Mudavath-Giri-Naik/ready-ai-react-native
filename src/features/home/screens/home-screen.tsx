@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import { StyleSheet, Text, View, Pressable, RefreshControl } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import Animated, { useAnimatedScrollHandler, withTiming, useSharedValue, FadeInDown, LinearTransition } from "react-native-reanimated";
+import Animated, { useAnimatedScrollHandler, withTiming, useSharedValue, FadeInDown, FadeIn, FadeOut, LinearTransition } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -204,7 +204,9 @@ export const HomeScreen = () => {
             hideStartBubble={!!selectedQuestion}
           />
           {isSelected && (
-            <View
+            <Animated.View
+              entering={FadeIn.duration(200)}
+              exiting={FadeOut.duration(150)}
               style={[styles.expandedWrapper, { left: 24, top: 88 }]}
             >
               <View style={styles.expandedTailBox}>
@@ -254,7 +256,7 @@ export const HomeScreen = () => {
                   </View>
                 </View>
               </View>
-            </View>
+            </Animated.View>
           )}
         </AnimatedCell>
       );
@@ -263,7 +265,13 @@ export const HomeScreen = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <View
+      style={styles.container}
+      onStartShouldSetResponder={() => !!selectedQuestion}
+      onResponderRelease={handleCloseOverlay}
+      onResponderTerminationRequest={() => true}
+    >
+
       <View style={styles.topNav}>
         <AppLogo variant="brand" size="sm" />
         <View style={styles.rhs}>
@@ -485,6 +493,7 @@ const styles = StyleSheet.create({
     color: HOME.socialColor,
     textAlign: "center",
   },
+
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "transparent",
