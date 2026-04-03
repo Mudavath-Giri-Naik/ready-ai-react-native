@@ -1,7 +1,5 @@
 import { StyleSheet, Text, View, ScrollView } from "react-native";
 import { SessionResult } from "@/features/session-result/types";
-import { colors } from "@/theme/colors";
-import { spacing } from "@/theme/spacing";
 import { typography } from "@/theme/typography";
 
 interface SmartSummaryTabProps {
@@ -14,7 +12,7 @@ export const SmartSummaryTab = ({ smartSummary }: SmartSummaryTabProps) => {
       <Text style={styles.sectionTitle}>What worked well</Text>
       {smartSummary.whatWorkedWell.map((item, index) => (
         <View key={`well-${index}`} style={styles.bulletRow}>
-          <Text style={styles.bullet}>•</Text>
+          <Text style={styles.sparkle}>✦</Text>
           <Text style={styles.bulletText}>{item}</Text>
         </View>
       ))}
@@ -22,7 +20,7 @@ export const SmartSummaryTab = ({ smartSummary }: SmartSummaryTabProps) => {
       <Text style={styles.sectionTitle}>Overall takeaways</Text>
       {smartSummary.overallTakeaways.map((item, index) => (
         <View key={`takeaway-${index}`} style={styles.bulletRow}>
-          <Text style={styles.bullet}>•</Text>
+          <Text style={styles.sparkle}>✦</Text>
           <Text style={styles.bulletText}>{item}</Text>
         </View>
       ))}
@@ -33,31 +31,35 @@ export const SmartSummaryTab = ({ smartSummary }: SmartSummaryTabProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#FFFFFF",
   },
   contentContainer: {
-    padding: spacing.screenPadding,
+    paddingHorizontal: 20,
+    paddingBottom: 40,
   },
   sectionTitle: {
-    fontSize: typography.sizes.l,
+    fontSize: 18,
     fontFamily: typography.fonts.inter.semiBold,
-    color: colors.textPrimary,
-    marginBottom: spacing.s,
-    marginTop: spacing.m,
+    color: "#1C1C1E",
+    marginBottom: 12,
+    marginTop: 20,
   },
   bulletRow: {
     flexDirection: "row",
-    marginBottom: spacing.xs,
-    gap: spacing.xs,
+    marginBottom: 10,
+    gap: 8,
+    alignItems: "flex-start",
   },
-  bullet: {
-    fontSize: typography.sizes.m,
-    color: colors.success,
+  sparkle: {
+    fontSize: 14,
+    color: "#13BF69",
+    marginTop: 2,
   },
   bulletText: {
     flex: 1,
-    fontSize: typography.sizes.m,
+    fontSize: 14,
     fontFamily: typography.fonts.inter.normal,
-    color: colors.textPrimary,
-    lineHeight: typography.sizes.m * 1.5,
+    color: "#3C3C43",
+    lineHeight: 21,
   },
 });

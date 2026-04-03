@@ -9,7 +9,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export const RootNavigator = () => {
   return (
     <Stack.Navigator
-      screenOptions={{ headerShown: false }}
+      screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#FFFFFF' } }}
       initialRouteName="Auth"
     >
       <Stack.Screen name="Auth" component={AuthNavigator} />

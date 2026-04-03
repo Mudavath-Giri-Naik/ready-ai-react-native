@@ -1,15 +1,22 @@
-import { StyleSheet, Text, View } from "react-native";
-import { FlashList } from "@shopify/flash-list";
-import Feather from "@expo/vector-icons/Feather";
+import { StyleSheet, Text, View, ScrollView, Pressable } from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { KeyMoment } from "@/features/session-result/types";
-import { colors } from "@/theme/colors";
-import { spacing } from "@/theme/spacing";
 import { typography } from "@/theme/typography";
 
 interface KeyMomentsTabProps {
   keyMoments: KeyMoment[];
   audioDurationSeconds: number;
 }
+
+const PLAYER = {
+  cardBg: "#FFF1E5",
+  playBg: "#FFFFFF",
+  trackBg: "#FFD0A6",
+  fillBg: "#FF5000",
+  labelColor: "#BF5F0A",
+  timeColor: "#8E8E93",
+  timestampColor: "#0081FB",
+} as const;
 
 const formatDuration = (seconds: number): string => {
   const mins = Math.floor(seconds / 60);
@@ -19,96 +26,121 @@ const formatDuration = (seconds: number): string => {
 
 export const KeyMomentsTab = ({ keyMoments, audioDurationSeconds }: KeyMomentsTabProps) => {
   return (
-    <View style={styles.container}>
-      <View style={styles.audioBar}>
-        <Feather name="play-circle" size={spacing.xxl} color={colors.primary} />
-        <View style={styles.progressBarTrack}>
-          <View style={styles.progressBarFill} />
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+      {/* Audio Player */}
+      <View style={styles.playerCard}>
+        <Pressable style={styles.playButton}>
+          <Ionicons name="play" size={24} color="#BF5F0A" />
+        </Pressable>
+        <View style={styles.playerContent}>
+          <Text style={styles.playerLabel}>Mock Interview</Text>
+          <View style={styles.progressTrack}>
+            <View style={styles.progressFill} />
+          </View>
+          <View style={styles.timeRow}>
+            <Text style={styles.timeText}>00:00</Text>
+            <Text style={styles.timeText}>{formatDuration(audioDurationSeconds)}</Text>
+          </View>
         </View>
-        <Text style={styles.durationText}>{formatDuration(audioDurationSeconds)}</Text>
       </View>
 
-      <FlashList
-        data={keyMoments}
-        keyExtractor={(item) => item.timestamp}
-        renderItem={({ item }) => (
-          <View style={styles.momentRow}>
-            <Text style={styles.timestamp}>{item.timestamp}</Text>
-            <Text style={styles.description} numberOfLines={3}>
-              {item.description}
-            </Text>
-            <View
-              style={[
-                styles.dot,
-                {
-                  backgroundColor:
-                    item.type === "positive" ? colors.success : colors.error,
-                },
-              ]}
-            />
-          </View>
-        )}
-      />
-    </View>
+      {/* Key Moments List */}
+      {keyMoments.map((item, index) => (
+        <View key={item.timestamp} style={styles.momentRow}>
+          <Text style={styles.timestamp}>{item.timestamp}</Text>
+          <Text style={styles.description}>{item.description}</Text>
+        </View>
+      ))}
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: spacing.screenPadding,
+    backgroundColor: "#FFFFFF",
   },
-  audioBar: {
+  contentContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 40,
+  },
+  /* ── Audio Player ── */
+  playerCard: {
+    width: 361,
+    height: 81,
+    alignSelf: "center",
     flexDirection: "row",
+    backgroundColor: PLAYER.cardBg,
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    marginTop: 16,
+    marginBottom: 24,
     alignItems: "center",
-    gap: spacing.s,
-    backgroundColor: colors.backgroundSecondary,
-    padding: spacing.s,
-    borderRadius: spacing.cardRadius,
-    marginBottom: spacing.m,
+    gap: 16,
   },
-  progressBarTrack: {
+  playButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: PLAYER.playBg,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingLeft: 4,
+  },
+  playerContent: {
     flex: 1,
-    height: spacing.xxs,
-    backgroundColor: colors.border,
-    borderRadius: spacing.xxxs,
+    gap: 6,
+    justifyContent: "center",
   },
-  progressBarFill: {
-    width: "30%",
-    height: "100%",
-    backgroundColor: colors.primary,
-    borderRadius: spacing.xxxs,
-  },
-  durationText: {
-    fontSize: typography.sizes.xs,
+  playerLabel: {
+    fontSize: 16,
     fontFamily: typography.fonts.inter.medium,
-    color: colors.textSecondary,
+    color: PLAYER.labelColor,
+    marginBottom: 2,
   },
-  momentRow: {
+  progressTrack: {
+    width: "100%",
+    height: 8,
+    backgroundColor: PLAYER.trackBg,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: "#FFBE8C",
+    overflow: "hidden",
+  },
+  progressFill: {
+    width: "40%",
+    height: "100%",
+    backgroundColor: PLAYER.fillBg,
+    borderRadius: 4,
+  },
+  timeRow: {
     flexDirection: "row",
-    alignItems: "flex-start",
-    paddingVertical: spacing.s,
-    gap: spacing.s,
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 2,
+  },
+  timeText: {
+    fontSize: 13,
+    fontFamily: typography.fonts.inter.medium,
+    color: PLAYER.timeColor,
+  },
+  /* ── Moments ── */
+  momentRow: {
+    marginBottom: 20,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: "#F3F4F6",
+    paddingBottom: 20,
   },
   timestamp: {
-    fontSize: typography.sizes.s,
+    fontSize: 14,
     fontFamily: typography.fonts.inter.semiBold,
-    color: colors.primary,
-    minWidth: spacing.xxxl,
+    color: PLAYER.timestampColor,
+    marginBottom: 8,
   },
   description: {
-    flex: 1,
-    fontSize: typography.sizes.s,
+    fontSize: 14,
     fontFamily: typography.fonts.inter.normal,
-    color: colors.textPrimary,
-    lineHeight: typography.sizes.s * 1.5,
-  },
-  dot: {
-    width: spacing.xs,
-    height: spacing.xs,
-    borderRadius: spacing.xxs,
-    marginTop: spacing.xxs,
+    color: "#4B5563",
+    lineHeight: 21,
   },
 });

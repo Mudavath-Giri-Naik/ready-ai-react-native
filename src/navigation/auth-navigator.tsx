@@ -9,7 +9,7 @@ const Stack = createNativeStackNavigator<AuthStackParamList>();
 export const AuthNavigator = () => {
   return (
     <Stack.Navigator
-      screenOptions={{ headerShown: false }}
+      screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#FFFFFF' } }}
       initialRouteName="Splash"
     >
       <Stack.Screen name="Splash" component={SplashScreen} />
