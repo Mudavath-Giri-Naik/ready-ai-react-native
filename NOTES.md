@@ -101,5 +101,5 @@ Manual testing was conducted across the following flows:
 3. **Session Experience**: Tab switching and back behavior.
 4. **Settings**: Logout flow and reset.
 
-> [!PS]
-> Current validation was code-level/static. Final pre-release QA should run on at least one physical iOS device and one Android device to validate animations.
+> [!NOTE]
+> Current  validation was code-level/static. Final pre-release QA should run on at least one physical iOS device and one Android device to validate animations.
