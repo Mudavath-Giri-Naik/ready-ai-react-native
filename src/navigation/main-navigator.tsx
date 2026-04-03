@@ -12,6 +12,7 @@ import { StoreScreen } from "@/features/store/screens/store-screen";
 import { SettingsScreen } from "@/features/settings/screens/settings-screen";
 import { typography } from "@/theme/typography";
 import { TabBarProvider, useTabBarContext } from "./tab-bar-context";
+import * as Haptics from "expo-haptics";
 
 const TAB = {
   activeColor: "#FF7800",
@@ -57,6 +58,7 @@ const CustomTabBar = ({ state, navigation }: BottomTabBarProps) => {
 
   const onPress = (name: string, key: string) => {
     const isFocusedNow = isFocused(name);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const event = navigation.emit({
       type: "tabPress",
       target: key,

@@ -36,5 +36,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 396,
     left: 107,
+    width: 179.74,
+    height: 60,
+    justifyContent: "center",
   },
 });

@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Pressable, ScrollView } from "react-native";
 import { useNavigation, CommonActions } from "@react-navigation/native";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
+import * as Haptics from "expo-haptics";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { spacing } from "@/theme/spacing";
 import { typography } from "@/theme/typography";
@@ -21,6 +22,7 @@ export const SettingsScreen = () => {
   const navigation = useNavigation();
 
   const handleLogout = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     navigation.dispatch(
       CommonActions.reset({
         index: 0,
@@ -33,7 +35,13 @@ export const SettingsScreen = () => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
+        <Pressable 
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            navigation.goBack();
+          }} 
+          style={styles.backButton}
+        >
           <Ionicons name="chevron-back" size={24} color="#2C2C2E" />
         </Pressable>
         <Text style={styles.headerTitle}>Your Profile</Text>
@@ -57,7 +65,10 @@ export const SettingsScreen = () => {
               end={{ x: 1, y: 0 }}
               style={styles.trialButtonGradient}
             >
-              <Pressable style={styles.trialButton}>
+              <Pressable 
+                style={styles.trialButton}
+                onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
+              >
                 <Text style={styles.trialButtonText}>START 3 DAYS TRIAL @ ₹1</Text>
               </Pressable>
             </LinearGradient>
@@ -98,7 +109,7 @@ export const SettingsScreen = () => {
 
         {/* Actions Card */}
         <View style={styles.card}>
-          <Pressable style={styles.row}>
+          <Pressable style={styles.row} onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}>
             <View style={styles.rowLeft}>
               <Ionicons name="headset-outline" size={22} color="#6C6C70" style={styles.rowIcon} />
               <Text style={styles.rowTitle}>Chat with us</Text>
@@ -106,7 +117,7 @@ export const SettingsScreen = () => {
             <Ionicons name="chevron-forward" size={20} color="#AEAEB2" />
           </Pressable>
           <View style={styles.divider} />
-          <Pressable style={styles.row}>
+          <Pressable style={styles.row} onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}>
             <View style={styles.rowLeft}>
               <Ionicons name="share-outline" size={22} color="#6C6C70" style={styles.rowIcon} />
               <Text style={styles.rowTitle}>Share the app</Text>
@@ -114,7 +125,7 @@ export const SettingsScreen = () => {
             <Ionicons name="chevron-forward" size={20} color="#AEAEB2" />
           </Pressable>
           <View style={styles.divider} />
-          <Pressable style={styles.row}>
+          <Pressable style={styles.row} onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}>
             <View style={styles.rowLeft}>
               <Ionicons name="star-outline" size={22} color="#6C6C70" style={styles.rowIcon} />
               <Text style={styles.rowTitle}>Rate the app</Text>

@@ -2,8 +2,7 @@ import { StyleSheet, View, Text } from "react-native";
 
 const LOGO_ORANGE = "#FF6D00";
 
-/* ── Onest font family names (loaded in App.tsx) ── */
-const ONEST_BLACK = "Onest_900Black";
+const ONEST_EXTRA_BOLD = "Onest_800ExtraBold";
 const ONEST_BOLD = "Onest_700Bold";
 
 interface AppLogoProps {
@@ -59,17 +58,18 @@ export const AppLogo = ({ size = "md", variant = "default" }: AppLogoProps) => {
         style={[
           styles.aiBadge,
           {
+            width: s.badgeWidth,
+            height: s.badgeHeight,
             borderRadius: s.badgeRadius,
-            paddingHorizontal: s.badgePadH,
-            paddingVertical: s.badgePadV,
             marginLeft: s.gap,
+            transform: [{ translateY: s.badgeOffsetY }],
           },
         ]}
       >
         <Text
           style={[
             styles.aiText,
-            { fontSize: s.aiFontSize, lineHeight: s.aiFontSize * 1.2 },
+            { fontSize: s.aiFontSize, lineHeight: s.aiFontSize },
           ]}
         >
           ai
@@ -82,28 +82,33 @@ export const AppLogo = ({ size = "md", variant = "default" }: AppLogoProps) => {
 /* ── Size presets ── */
 const SIZE_MAP = {
   sm: {
-    readyFontSize: 20,
-    aiFontSize: 15,
-    badgeRadius: 7,
-    badgePadH: 6,
-    badgePadV: 3,
-    gap: 3,
+    readyFontSize: 24,
+    aiFontSize: 19,
+    badgeWidth: 22,
+    badgeHeight: 22,
+    badgeRadius: 6,
+    gap: 4,
+    badgeOffsetY: -1,
   },
   md: {
-    readyFontSize: 28,
-    aiFontSize: 20,
-    badgeRadius: 9,
-    badgePadH: 8,
-    badgePadV: 3,
-    gap: 4,
+    // Matching exact Figma dimensions provided for Welcome Screen (138x46)
+    readyFontSize: 38,
+    aiFontSize: 24,
+    badgeWidth: 26,
+    badgeHeight: 25.8,
+    badgeRadius: 7,
+    gap: 3,
+    badgeOffsetY: -1,
   },
   lg: {
-    readyFontSize: 38,
-    aiFontSize: 26,
-    badgeRadius: 11,
-    badgePadH: 10,
-    badgePadV: 4,
-    gap: 5,
+    // Matching exact Figma dimensions provided for splash
+    readyFontSize: 50,
+    aiFontSize: 31.3,
+    badgeWidth: 33.8,
+    badgeHeight: 33.7,
+    badgeRadius: 9.13,
+    gap: 3.91,
+    badgeOffsetY: -2,
   },
 } as const;
 
@@ -113,7 +118,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   readyText: {
-    fontFamily: ONEST_BLACK,
+    fontFamily: ONEST_EXTRA_BOLD,
     color: "#FF5000",
     letterSpacing: -0.5,
     textShadowColor: "#FF5000",
@@ -121,7 +126,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 0.3,
   },
   exclamation: {
-    fontFamily: ONEST_BLACK,
+    fontFamily: ONEST_EXTRA_BOLD,
     color: LOGO_ORANGE,
     letterSpacing: -0.5,
     textShadowColor: LOGO_ORANGE,
@@ -134,7 +139,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   aiText: {
-    fontFamily: ONEST_BOLD,
+    fontFamily: ONEST_EXTRA_BOLD,
     color: "#FFFFFF",
     letterSpacing: -0.3,
   },

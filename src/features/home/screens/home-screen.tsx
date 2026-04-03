@@ -1,8 +1,8 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { StyleSheet, Text, View, Pressable, ScrollView } from "react-native";
+import { StyleSheet, Text, View, Pressable, FlatList, RefreshControl } from "react-native";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import { FlashList } from "@shopify/flash-list";
-import Animated, { useAnimatedScrollHandler, withTiming, useSharedValue, useAnimatedStyle } from "react-native-reanimated";
+import Animated, { useAnimatedScrollHandler, withTiming, useSharedValue, useAnimatedStyle, FadeInDown, LinearTransition, SlideInDown, SlideOutUp } from "react-native-reanimated";
+import * as Haptics from "expo-haptics";
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Image } from "expo-image";
@@ -16,28 +16,15 @@ import { typography } from "@/theme/typography";
 import questionsData from "@/mock-data/questions.json";
 import { useTabBarContext } from "@/navigation/tab-bar-context";
 
-const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
+const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
-const AnimatedCell = ({ children, isSelected, traceId }: { children: React.ReactNode, isSelected: boolean, traceId: string }) => {
-  const translateY = useSharedValue(40);
-  const opacity = useSharedValue(0.2);
-
-  useEffect(() => {
-    translateY.value = 40;
-    opacity.value = 0.2;
-    translateY.value = withTiming(0, { duration: 400 });
-    opacity.value = withTiming(1, { duration: 450 });
-  }, [traceId]); // Recycles flawlessly with FlashList
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [{ translateY: translateY.value }],
-    zIndex: isSelected ? 1000 : 1,
-    elevation: isSelected ? 1000 : 1
-  }));
-
+const AnimatedCell = ({ children, isSelected, index }: { children: React.ReactNode, isSelected: boolean, index: number }) => {
   return (
-    <Animated.View style={animatedStyle}>
+    <Animated.View 
+      entering={FadeInDown.delay(index * 150).springify().damping(12)}
+      layout={LinearTransition.springify().damping(14)}
+      style={{ zIndex: isSelected ? 1000 : 1, elevation: isSelected ? 10 : 1 }}
+    >
       {children}
     </Animated.View>
   );
@@ -67,30 +54,36 @@ interface ListItem {
 }
 
 const AnimatedSocialProof = ({ initialCount, questionNumber }: { initialCount: number, questionNumber: number }) => {
-  const [count, setCount] = useState(initialCount);
-  const scale = useSharedValue(1);
+  const [actualCount, setActualCount] = useState(initialCount);
+  const [displayCount, setDisplayCount] = useState(Math.max(0, initialCount - 87));
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCount(prev => prev + Math.floor(Math.random() * 2) + 1);
-      scale.value = withTiming(1.3, { duration: 150 }, () => {
-        scale.value = withTiming(1, { duration: 150 });
-      });
+      setActualCount(prev => prev + Math.floor(Math.random() * 5) + 1);
     }, 10000);
     return () => clearInterval(interval);
   }, []);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
+  useEffect(() => {
+    if (displayCount < actualCount) {
+      const timer = setTimeout(() => {
+        setDisplayCount(prev => {
+          const diff = actualCount - prev;
+          const step = Math.max(1, Math.floor(diff * 0.15));
+          return prev + step;
+        });
+      }, 16);
+      return () => clearTimeout(timer);
+    }
+  }, [displayCount, actualCount]);
 
   return (
     <View style={styles.socialRow}>
       <Ionicons name="flag" size={18} color={HOME.socialColor} />
       <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <Animated.Text style={[styles.socialText, animatedStyle]}>
-          {count.toLocaleString()}
-        </Animated.Text>
+        
+        <Text style={styles.socialText}>{displayCount.toLocaleString()}</Text>
+
         <Text style={styles.socialText}>
           {` users completed Question ${questionNumber} today`}
         </Text>
@@ -105,6 +98,18 @@ export const HomeScreen = () => {
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
     null
   );
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    // Simulate data fetch
+    setTimeout(() => {
+      // Bumping the key forces the List items to recognize new data binds, smoothly triggering the enter animation
+      setRefreshKey((prev) => prev + 1);
+      setRefreshing(false);
+    }, 1200);
+  }, []);
 
   const { tabBarTranslateY } = useTabBarContext();
   const lastScrollY = useSharedValue(0);
@@ -146,6 +151,7 @@ export const HomeScreen = () => {
 
   const handleFeedbackPress = useCallback(
     (questionId: string) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       setSelectedQuestion(null);
       navigation.navigate("SessionResult", { questionId });
     },
@@ -155,10 +161,10 @@ export const HomeScreen = () => {
   const socialProofQuestion = questions[SOCIAL_PROOF_INDEX - 1];
 
   const renderItem = useCallback(
-    ({ item }: { item: ListItem }) => {
+    ({ item, index }: { item: ListItem; index: number }) => {
       if (item.type === "socialProof") {
         return (
-          <AnimatedCell isSelected={false} traceId="socialProof">
+          <AnimatedCell isSelected={false} index={index}>
             {socialProofQuestion ? (
               <AnimatedSocialProof 
                 initialCount={socialProofQuestion.completedTodayCount} 
@@ -185,7 +191,7 @@ export const HomeScreen = () => {
       const cardColors = getColors(variant);
 
       return (
-        <AnimatedCell isSelected={isSelected} traceId={q.id}>
+        <AnimatedCell isSelected={isSelected} index={index}>
           <QuestionCard
             question={q}
             variant={variant}
@@ -236,7 +242,10 @@ export const HomeScreen = () => {
                   </View>
 
                   <View style={styles.aiShadow}>
-                    <Pressable style={styles.aiButton}>
+                    <Pressable 
+                      style={styles.aiButton}
+                      onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
+                    >
                       <Feather name="lock" size={14} color={colors.textInverse} />
                       <Text style={styles.aiButtonText}>AI VS AI (LISTEN)</Text>
                     </Pressable>
@@ -254,7 +263,7 @@ export const HomeScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.topNav}>
-        <AppLogo variant="brand" />
+        <AppLogo variant="brand" size="sm" />
         <View style={styles.rhs}>
           <View style={styles.streakShadow}>
             <View style={styles.streakCounter}>
@@ -289,25 +298,37 @@ export const HomeScreen = () => {
         </View>
       </View>
 
-      <Pressable
-        style={{ flex: 1 }}
-        onPress={selectedQuestion ? handleCloseOverlay : undefined}
-      >
-        <AnimatedFlashList
+      <View style={{ flex: 1 }}>
+        <AnimatedFlatList
           data={listData}
           extraData={selectedQuestion?.id}
           renderItem={renderItem as any}
           keyExtractor={(item: any, index: number) =>
-            item.type === "socialProof"
-              ? "social-proof"
-              : item.question?.id ?? String(index)
+            `${refreshKey}-${
+              item.type === "socialProof"
+                ? "social-proof"
+                : item.question?.id ?? String(index)
+            }`
           }
-          getItemType={(item: any) => item.type}
           contentContainerStyle={styles.listContent}
           onScroll={handleScroll}
           scrollEventThrottle={16}
+          showsVerticalScrollIndicator={false}
+          onTouchStart={() => {
+            if (selectedQuestion) handleCloseOverlay();
+          }}
+          onScrollBeginDrag={() => {
+            if (selectedQuestion) handleCloseOverlay();
+          }}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={colors.primary}
+            />
+          }
         />
-      </Pressable>
+      </View>
 
     </View>
   );
@@ -331,6 +352,8 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   rhs: {
+    width: 105,
+    height: 36,
     flexDirection: "row",
     alignItems: "center",
     gap: 16,

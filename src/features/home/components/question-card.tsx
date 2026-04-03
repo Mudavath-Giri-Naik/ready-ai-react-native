@@ -1,6 +1,7 @@
 import React, { useRef, useCallback } from "react";
 import { StyleSheet, Text, View, Pressable, Animated } from "react-native";
 import { Image } from "expo-image";
+import * as Haptics from "expo-haptics";
 import { Question } from "@/features/home/types";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
@@ -59,12 +60,12 @@ const CardStripes = ({ xOffset = 0 }: { xOffset?: number }) => (
 const stripeStyles = StyleSheet.create({
   stripe1: {
     position: "absolute",
-    width: 28,
+    width: 33,
     height: 120,
     left: -10,
     top: -30,
     backgroundColor: "rgba(255,255,255,0.35)",
-    transform: [{ rotate: "45deg" }],
+    transform: [{ rotate: "25deg" }],
   },
   stripe2: {
     position: "absolute",
@@ -73,7 +74,7 @@ const stripeStyles = StyleSheet.create({
     left: 30,
     top: -50,
     backgroundColor: "rgba(255,255,255,0.35)",
-    transform: [{ rotate: "45deg" }],
+    transform: [{ rotate: "25deg" }],
   },
 });
 
@@ -98,6 +99,7 @@ const QuestionCardComponent = ({
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const onPressIn = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     Animated.spring(scaleAnim, {
       toValue: 0.95,
       useNativeDriver: true,

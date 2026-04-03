@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Pressable, ScrollView } from "react-native";
 import { useRoute, useNavigation, RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Image } from "expo-image";
+import * as Haptics from "expo-haptics";
 import Feather from "@expo/vector-icons/Feather";
 import { RootStackParamList } from "@/navigation/types";
 import { SessionResult } from "@/features/session-result/types";
@@ -37,6 +38,11 @@ export const SessionResultScreen = () => {
   const navigation = useNavigation<SessionResultNav>();
   const [activeTab, setActiveTab] = useState<"summary" | "moments">("summary");
 
+  const onTabPress = (tab: "summary" | "moments") => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setActiveTab(tab);
+  };
+
   const { questionId } = route.params;
   const data = sessionResultsMap[questionId] || sessionResultsMap["q1"];
 
@@ -47,7 +53,13 @@ export const SessionResultScreen = () => {
         {/* Close Button - streak style */}
         <View style={styles.closePosition}>
           <View style={styles.closeShadow}>
-            <Pressable style={styles.closeButton} onPress={() => navigation.goBack()}>
+            <Pressable 
+              style={styles.closeButton} 
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                navigation.goBack();
+              }}
+            >
               <Feather name="x" size={18} color="#000000" />
             </Pressable>
           </View>
@@ -96,7 +108,7 @@ export const SessionResultScreen = () => {
         <View style={styles.tabRow}>
           <Pressable
             style={styles.tab}
-            onPress={() => setActiveTab("summary")}
+            onPress={() => onTabPress("summary")}
           >
             <View style={[styles.tabInner, activeTab === "summary" && styles.activeTabInner]}>
               <Text
@@ -111,7 +123,7 @@ export const SessionResultScreen = () => {
           </Pressable>
           <Pressable
             style={styles.tab}
-            onPress={() => setActiveTab("moments")}
+            onPress={() => onTabPress("moments")}
           >
             <View style={[styles.tabInner, activeTab === "moments" && styles.activeTabInner]}>
               <Text

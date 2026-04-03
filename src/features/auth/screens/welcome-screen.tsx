@@ -5,6 +5,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Image } from "expo-image";
 import Feather from "@expo/vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
+import * as Haptics from "expo-haptics";
 import { AuthStackParamList } from "@/navigation/types";
 import { AppLogo } from "@/components/ui/app-logo";
 import { colors } from "@/theme/colors";
@@ -30,8 +31,8 @@ export const WelcomeScreen = () => {
           contentFit="contain"
           cachePolicy="memory-disk"
         />
-        <Text style={styles.taglineTitle}>Practice Top Interview</Text>
-        <Text style={styles.taglineSubtitle}>
+        <Text style={styles.taglineTitle}>
+          Practice Top Interview{"\n"}
           Questions <Text style={styles.taglineHighlight}>with AI</Text>
         </Text>
       </View>
@@ -42,7 +43,10 @@ export const WelcomeScreen = () => {
             style={({ pressed }) => [
               pressed && styles.buttonPressed,
             ]}
-            onPress={() => navigation.navigate("Login")}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              navigation.navigate("Login");
+            }}
           >
             <LinearGradient
               colors={["#FF7A00", "#FF4C00"]}
@@ -78,9 +82,10 @@ const styles = StyleSheet.create({
   logoContainer: {
     position: "absolute",
     top: 78,
-    left: 0,
-    right: 0,
-    alignItems: "center",
+    left: 128,
+    width: 138,
+    height: 46,
+    justifyContent: "center",
   },
   content: {
     position: "absolute",
@@ -89,30 +94,19 @@ const styles = StyleSheet.create({
     width: 348,
     height: 330,
     alignItems: "center",
+    gap: 18,
   },
   avatar: {
     width: 250,
     height: 250,
-    marginBottom: 18,
   },
   taglineTitle: {
     width: 348,
-    height: 31,
     fontSize: typography.sizes.xxl,
     fontFamily: typography.fonts.inter.semiBold,
     color: colors.textPrimary,
     textAlign: "center",
-    lineHeight: 24,
-    letterSpacing: -0.24,
-  },
-  taglineSubtitle: {
-    width: 348,
-    height: 31,
-    fontSize: typography.sizes.xxl,
-    fontFamily: typography.fonts.inter.semiBold,
-    color: colors.textPrimary,
-    textAlign: "center",
-    lineHeight: 24,
+    lineHeight: 31,
     letterSpacing: -0.24,
   },
   taglineHighlight: {
@@ -127,7 +121,7 @@ const styles = StyleSheet.create({
   buttonShadow: {
     backgroundColor: "#D93A00",
     borderRadius: spacing.inputRadius,
-    paddingBottom: 8,
+    paddingBottom: 6, // Adding a slight 3D shadow 
     marginBottom: spacing.xl,
     width: 345,
   },
@@ -136,9 +130,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
-    height: 52,
+    height: 58,
     borderRadius: spacing.inputRadius,
-    gap: 4,
+    gap: 2,
   },
   buttonPressed: {
     transform: [{ translateY: 4 }],

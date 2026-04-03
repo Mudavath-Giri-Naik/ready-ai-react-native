@@ -1,8 +1,9 @@
 import { useState, useRef } from "react";
-import { StyleSheet, Text, View, TextInput, Pressable } from "react-native";
+import { StyleSheet, Text, View, TextInput, Pressable, ActivityIndicator, Keyboard, InteractionManager } from "react-native";
 import { CommonActions, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import Feather from "@expo/vector-icons/Feather";
+import * as Haptics from "expo-haptics";
 import { LinearGradient } from "expo-linear-gradient";
 import { AuthStackParamList } from "@/navigation/types";
 import { typography } from "@/theme/typography";
@@ -28,15 +29,25 @@ export const LoginScreen = () => {
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const inputs = useRef<Array<TextInput | null>>([]);
 
   const handleContinue = () => {
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name: "Main" }],
-      })
-    );
+    if (isLoading) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setIsLoading(true);
+    Keyboard.dismiss();
+    
+    setTimeout(() => {
+      InteractionManager.runAfterInteractions(() => {
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: "Main" }],
+          })
+        );
+      });
+    }, 1500); // Add a 1.5s loading delay for the animation
   };
 
   const handleOtpChange = (text: string, index: number) => {
@@ -44,8 +55,16 @@ export const LoginScreen = () => {
     newOtp[index] = text;
     setOtp(newOtp);
 
-    if (text !== "" && index < 5) {
-      inputs.current[index + 1]?.focus();
+    if (text !== "") {
+      if (index < newOtp.length - 1) {
+        inputs.current[index + 1]?.focus();
+      } else {
+        // Last digit entered
+        inputs.current[index]?.blur();
+        if (newOtp.every((digit) => digit !== "")) {
+          handleContinue();
+        }
+      }
     }
   };
 
@@ -126,14 +145,18 @@ export const LoginScreen = () => {
 
       <View style={styles.buttonWrapper}>
         <View style={styles.buttonShadow}>
-          <Pressable onPress={handleContinue}>
+          <Pressable onPress={isLoading ? undefined : handleContinue} disabled={isLoading}>
             <LinearGradient
               colors={["#FF7A00", "#FF4C00"]}
               style={styles.buttonGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 0, y: 1 }}
             >
-              <Text style={styles.buttonText}>Continue</Text>
+              {isLoading ? (
+                <ActivityIndicator color={COLORS.white} />
+              ) : (
+                <Text style={styles.buttonText}>Continue</Text>
+              )}
             </LinearGradient>
           </Pressable>
         </View>
