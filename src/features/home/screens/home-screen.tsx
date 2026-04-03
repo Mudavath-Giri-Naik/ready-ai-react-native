@@ -19,9 +19,10 @@ import { useTabBarContext } from "@/navigation/tab-bar-context";
 
 const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
 
-const AnimatedCell = ({ children, isSelected, index }: { children: React.ReactNode, isSelected: boolean, index: number }) => {
+const AnimatedCell = ({ children, isSelected, index, refreshKey }: { children: React.ReactNode, isSelected: boolean, index: number, refreshKey: number }) => {
   return (
     <Animated.View 
+      key={`cell-${refreshKey}-${index}`}
       entering={FadeInDown.delay(index * 150).springify().damping(12)}
       layout={LinearTransition.springify().damping(14)}
       style={{ zIndex: isSelected ? 1000 : 1, elevation: isSelected ? 10 : 1 }}
@@ -165,7 +166,7 @@ export const HomeScreen = () => {
     ({ item, index }: { item: ListItem; index: number }) => {
       if (item.type === "socialProof") {
         return (
-          <AnimatedCell isSelected={false} index={index}>
+          <AnimatedCell isSelected={false} index={index} refreshKey={refreshKey}>
             {socialProofQuestion ? (
               <AnimatedSocialProof 
                 initialCount={socialProofQuestion.completedTodayCount} 
@@ -192,7 +193,7 @@ export const HomeScreen = () => {
       const cardColors = getColors(variant);
 
       return (
-        <AnimatedCell isSelected={isSelected} index={index}>
+        <AnimatedCell isSelected={isSelected} index={index} refreshKey={refreshKey}>
           <QuestionCard
             question={q}
             variant={variant}
@@ -258,7 +259,7 @@ export const HomeScreen = () => {
         </AnimatedCell>
       );
     },
-    [socialProofQuestion, handleQuestionPress, handleFeedbackPress, selectedQuestion]
+    [socialProofQuestion, handleQuestionPress, handleFeedbackPress, selectedQuestion, refreshKey]
   );
 
   return (
