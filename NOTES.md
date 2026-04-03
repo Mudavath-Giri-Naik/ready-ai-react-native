@@ -29,3 +29,21 @@ A vertical gradient (#FF6D00 → #FF3900) was specified in Figma for the "Ready"
 - Question card states are determined by position: Q1 = active, Q2 = start, Q3+ = upcoming
 - The social proof banner always appears after the 3rd question
 - The AI VS AI (LISTEN) button is non-functional (disabled state)
+
+## Folder Structure
+
+This project follows a strict Feature-Based folder structure to ensure maximum scalability and decoupling between independent application modules:
+
+```text
+src/
+├── components/      # (Shared generic UI components across all features, like AppLogo)
+├── features/        # (The core feature modules)
+│   ├── auth/        # (Contains screens, types, and components specific to Login/Welcome)
+│   ├── home/        # (Contains the Main Home list, QuestionCards, and social proofs)
+│   ├── session-result/ # (Result breakdown logic, summaries, and modals)
+│   ├── settings/    # (Trial cards, user profile, etc.)
+│   └── store/       # (Storefront feature logic)
+├── navigation/      # (App-wide routing configs and tab bars)
+├── theme/           # (Global design tokens, typography, and spacing)
+└── mock-data/       # (Data assets used globally)
+```
