@@ -1,7 +1,8 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { StyleSheet, Text, View, Pressable, FlatList, RefreshControl } from "react-native";
+import { StyleSheet, Text, View, Pressable, RefreshControl } from "react-native";
+import { FlashList } from "@shopify/flash-list";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
-import Animated, { useAnimatedScrollHandler, withTiming, useSharedValue, useAnimatedStyle, FadeInDown, LinearTransition, SlideInDown, SlideOutUp } from "react-native-reanimated";
+import Animated, { useAnimatedScrollHandler, withTiming, useSharedValue, FadeInDown, LinearTransition } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -16,7 +17,7 @@ import { typography } from "@/theme/typography";
 import questionsData from "@/mock-data/questions.json";
 import { useTabBarContext } from "@/navigation/tab-bar-context";
 
-const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
+const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
 
 const AnimatedCell = ({ children, isSelected, index }: { children: React.ReactNode, isSelected: boolean, index: number }) => {
   return (
@@ -299,11 +300,12 @@ export const HomeScreen = () => {
       </View>
 
       <View style={{ flex: 1 }}>
-        <AnimatedFlatList
+        <AnimatedFlashList
           data={listData}
+          estimatedItemSize={80}
           extraData={selectedQuestion?.id}
-          renderItem={renderItem as any}
-          keyExtractor={(item: any, index: number) =>
+          renderItem={renderItem}
+          keyExtractor={(item: ListItem, index: number) =>
             `${refreshKey}-${
               item.type === "socialProof"
                 ? "social-proof"

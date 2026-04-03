@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { StyleSheet, Text, View, TextInput, Pressable, ActivityIndicator, Keyboard, InteractionManager } from "react-native";
+import { StyleSheet, Text, View, TextInput, Pressable, ActivityIndicator, Keyboard, InteractionManager, NativeSyntheticEvent, TextInputKeyPressEventData } from "react-native";
 import { CommonActions, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import Feather from "@expo/vector-icons/Feather";
@@ -68,7 +68,7 @@ export const LoginScreen = () => {
     }
   };
 
-  const handleOtpKeyPress = (e: any, index: number) => {
+  const handleOtpKeyPress = (e: NativeSyntheticEvent<TextInputKeyPressEventData>, index: number) => {
     if (e.nativeEvent.key === "Backspace" && otp[index] === "" && index > 0) {
       inputs.current[index - 1]?.focus();
     }
