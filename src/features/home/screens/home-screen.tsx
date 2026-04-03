@@ -143,7 +143,7 @@ export const HomeScreen = () => {
   }, []);
 
   const handleQuestionPress = useCallback((question: Question) => {
-    setSelectedQuestion(question);
+    setSelectedQuestion(prev => prev?.id === question.id ? null : question);
   }, []);
 
   const handleCloseOverlay = useCallback(() => {
@@ -316,9 +316,6 @@ export const HomeScreen = () => {
           onScroll={handleScroll}
           scrollEventThrottle={16}
           showsVerticalScrollIndicator={false}
-          onTouchStart={() => {
-            if (selectedQuestion) handleCloseOverlay();
-          }}
           onScrollBeginDrag={() => {
             if (selectedQuestion) handleCloseOverlay();
           }}
