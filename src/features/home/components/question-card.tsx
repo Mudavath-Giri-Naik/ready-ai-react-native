@@ -1,54 +1,58 @@
-import React from "react";
-import { StyleSheet, Text, View, Pressable } from "react-native";
+import React, { useRef, useCallback } from "react";
+import { StyleSheet, Text, View, Pressable, Animated } from "react-native";
 import { Image } from "expo-image";
 import { Question } from "@/features/home/types";
 import { colors } from "@/theme/colors";
 import { typography } from "@/theme/typography";
 
-const DONE = {
+export interface ThemeColors {
+  cardBg: string;
+  shadow: string;
+  badgeBg: string;
+}
+
+const DONE: ThemeColors = {
   cardBg: "#D0F8BC",
   shadow: "#00AD00",
   badgeBg: "#51D900",
-} as const;
+};
 
-const START_COLORS = {
+const START_COLORS: ThemeColors = {
   cardBg: "#FFE99C",
   shadow: "#BF9C26",
   badgeBg: "#FFCE00",
-} as const;
+};
 
-const UPCOMING = {
+const UPCOMING: ThemeColors = {
   cardBg: "#EFEFF4",
   shadow: "#8E8E93",
   badgeBg: "#D1D1D6",
-} as const;
+};
 
-type CardVariant = "done" | "start" | "upcoming";
+export type CardVariant = "done" | "start" | "upcoming";
 
 interface QuestionCardProps {
   question: Question;
-  variant: CardVariant;
+  variant?: CardVariant;
   onPress: () => void;
   paddingLeft?: number;
+  marginBottom?: number;
+  customColors?: ThemeColors;
+  showStripes?: boolean;
+  isSelected?: boolean;
+  hideStartBubble?: boolean;
 }
 
-const getColors = (variant: CardVariant) => {
+export const getColors = (variant: CardVariant) => {
   if (variant === "done") return DONE;
   if (variant === "start") return START_COLORS;
   return UPCOMING;
 };
 
-const DiagonalStripes = () => (
+const CardStripes = ({ xOffset = 0 }: { xOffset?: number }) => (
   <>
-    <View style={stripeStyles.stripe1} />
-    <View style={stripeStyles.stripe2} />
-  </>
-);
-
-const BadgeStripes = () => (
-  <>
-    <View style={stripeStyles.badgeStripe1} />
-    <View style={stripeStyles.badgeStripe2} />
+    <View style={[stripeStyles.stripe1, { left: -10 + xOffset }]} />
+    <View style={[stripeStyles.stripe2, { left: 30 + xOffset }]} />
   </>
 );
 
@@ -71,49 +75,70 @@ const stripeStyles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.35)",
     transform: [{ rotate: "45deg" }],
   },
-  badgeStripe1: {
-    position: "absolute",
-    width: 25,
-    height: 70,
-    left: -8,
-    top: -10,
-    backgroundColor: "rgba(255,255,255,0.35)",
-    transform: [{ rotate: "30deg" }],
-  },
-  badgeStripe2: {
-    position: "absolute",
-    width: 20,
-    height: 95,
-    left: 24,
-    top: -10,
-    backgroundColor: "rgba(255,255,255,0.35)",
-    transform: [{ rotate: "30deg" }],
-  },
 });
 
 const QuestionCardComponent = ({
   question,
-  variant,
+  variant = "upcoming",
   onPress,
+  marginBottom = 8,
   paddingLeft = 48,
+  customColors,
+  showStripes,
+  isSelected,
+  hideStartBubble,
 }: QuestionCardProps) => {
-  const c = getColors(variant);
-  const showStripes = variant === "done" || variant === "start";
+  const c = customColors || getColors(variant);
+  const shouldShowStripes =
+    showStripes ?? (variant === "done" || variant === "start");
+
+  const showStartBubble = variant === "start" && !isSelected && !hideStartBubble;
+
+  /* ── Press animation ── */
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const onPressIn = useCallback(() => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.95,
+      useNativeDriver: true,
+      speed: 50,
+      bounciness: 4,
+    }).start();
+  }, [scaleAnim]);
+
+  const onPressOut = useCallback(() => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 20,
+      bounciness: 8,
+    }).start();
+  }, [scaleAnim]);
 
   return (
-    <Pressable
+    <View
       style={[
         styles.questionRow,
         {
           paddingLeft,
+          marginBottom,
           zIndex: variant === "start" ? 10 : 1,
           elevation: variant === "start" ? 10 : 1,
         },
       ]}
-      onPress={onPress}
     >
-      <View style={styles.buttonWCompany}>
-        <View style={styles.outerContainer}>
+      <Pressable
+        style={styles.buttonWCompany}
+        onPress={onPress}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+      >
+        <Animated.View
+          style={[
+            styles.outerContainer,
+            { transform: [{ scale: scaleAnim }] },
+          ]}
+        >
           <View
             style={[styles.cardShadow, { backgroundColor: c.shadow }]}
           >
@@ -123,7 +148,7 @@ const QuestionCardComponent = ({
                 { backgroundColor: c.cardBg, borderColor: c.cardBg },
               ]}
             >
-              {showStripes && <DiagonalStripes />}
+              {shouldShowStripes && <CardStripes />}
               <View style={styles.cardContent}>
                 <Text style={styles.companyName} numberOfLines={1}>
                   {question.companyName}
@@ -142,15 +167,18 @@ const QuestionCardComponent = ({
               style={[styles.badgeShadow, { backgroundColor: c.shadow }]}
             >
               <View
-                style={[styles.badge, { backgroundColor: c.badgeBg, borderColor: c.badgeBg }]}
+                style={[
+                  styles.badge,
+                  { backgroundColor: c.badgeBg, borderColor: c.badgeBg },
+                ]}
               >
-                {showStripes && <BadgeStripes />}
+                {shouldShowStripes && <CardStripes xOffset={-12} />}
                 <Text style={styles.badgeNumber}>
                   {question.questionNumber}
                 </Text>
               </View>
             </View>
-            {variant === "start" && (
+            {showStartBubble && (
               <View style={styles.startBubbleContainer}>
                 <View style={styles.startBubble}>
                   <Text style={styles.startText}>START</Text>
@@ -160,9 +188,9 @@ const QuestionCardComponent = ({
               </View>
             )}
           </View>
-        </View>
-      </View>
-    </Pressable>
+        </Animated.View>
+      </Pressable>
+    </View>
   );
 };
 
@@ -170,37 +198,36 @@ export const QuestionCard = React.memo(QuestionCardComponent);
 
 const styles = StyleSheet.create({
   questionRow: {
-    alignSelf: "stretch",
+    width: 393,
     height: 97,
     flexDirection: "row",
     alignItems: "center",
     paddingTop: 8,
     paddingRight: 8,
     paddingBottom: 8,
-    marginBottom: 16,
     gap: 8,
   },
   buttonWCompany: {
     height: 81,
-    width: 212,
+    width: 206,
   },
   outerContainer: {
     position: "absolute",
-    width: 212,
+    width: 206,
     height: 81,
     left: 0,
     top: 0,
   },
   cardShadow: {
     position: "absolute",
-    width: 212,
+    width: 206,
     left: 0,
     top: 0,
     borderRadius: 30,
     paddingBottom: 8,
   },
   company: {
-    width: 212,
+    width: 206,
     height: 73,
     borderRadius: 30,
     overflow: "hidden",
@@ -231,19 +258,20 @@ const styles = StyleSheet.create({
   },
   badgePosition: {
     position: "absolute",
-    left: 138,
-    top: -4,
+    left: 132,
+    top: 0,
     alignItems: "center",
   },
   startBubbleContainer: {
     position: "absolute",
-    top: -42,
+    top: -34,
     alignSelf: "center",
     alignItems: "center",
     zIndex: 3,
   },
   startBubble: {
-    minWidth: 72,
+    width: 81.24,
+    height: 45,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 10,
@@ -251,8 +279,6 @@ const styles = StyleSheet.create({
     borderColor: "#E5E5EA",
     borderStyle: "solid",
     backgroundColor: colors.background,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
   },
   startBubbleTailOuter: {
     width: 0,
@@ -284,16 +310,18 @@ const styles = StyleSheet.create({
   startText: {
     fontSize: 15,
     letterSpacing: 0.51,
-    lineHeight: 17,
+    lineHeight: 18,
     textTransform: "uppercase",
     fontWeight: "900",
-    fontFamily: typography.fonts.inter.bold,
+    fontFamily: typography.fonts.inter.black,
     color: "#13BF69",
     textAlign: "center",
+    textShadowColor: "#13BF69",
+    textShadowOffset: { width: 0.5, height: 0 },
+    textShadowRadius: 0.5,
   },
   badgeShadow: {
     borderRadius: 30,
-    paddingBottom: 6,
   },
   badge: {
     width: 74,

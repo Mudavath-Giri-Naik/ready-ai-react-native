@@ -11,7 +11,7 @@ import { KeyMomentsTab } from "@/features/session-result/components/key-moments-
 import { colors } from "@/theme/colors";
 import { spacing } from "@/theme/spacing";
 import { typography } from "@/theme/typography";
-import sessionResultData from "@/mock-data/session-result.json";
+import allSessionResults from "@/mock-data/session-results.json";
 
 const menAvatar = require("../../../../assets/men_avatar.png");
 const ladyAvatar = require("../../../../assets/lady_avatar.png");
@@ -30,12 +30,15 @@ const AVATAR_BORDER = 2.72;
 const AVATAR_RADIUS = 667.59;
 const AVATAR_OVERLAP = 20;
 
-const data = sessionResultData as SessionResult;
+const sessionResultsMap = allSessionResults as Record<string, SessionResult>;
 
 export const SessionResultScreen = () => {
   const route = useRoute<SessionResultRoute>();
   const navigation = useNavigation<SessionResultNav>();
   const [activeTab, setActiveTab] = useState<"summary" | "moments">("summary");
+
+  const { questionId } = route.params;
+  const data = sessionResultsMap[questionId] || sessionResultsMap["q1"];
 
   return (
     <View style={styles.container}>

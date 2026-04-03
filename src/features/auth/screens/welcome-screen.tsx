@@ -4,6 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Image } from "expo-image";
 import Feather from "@expo/vector-icons/Feather";
+import { LinearGradient } from "expo-linear-gradient";
 import { AuthStackParamList } from "@/navigation/types";
 import { AppLogo } from "@/components/ui/app-logo";
 import { colors } from "@/theme/colors";
@@ -36,20 +37,28 @@ export const WelcomeScreen = () => {
       </View>
 
       <View style={styles.footer}>
-        <Pressable
-          style={({ pressed }) => [
-            styles.button,
-            pressed && styles.buttonPressed,
-          ]}
-          onPress={() => navigation.navigate("Login")}
-        >
-          <Feather
-            name="check-circle"
-            size={typography.sizes.l}
-            color={colors.buttonPrimaryText}
-          />
-          <Text style={styles.buttonText}>Let's go</Text>
-        </Pressable>
+        <View style={styles.buttonShadow}>
+          <Pressable
+            style={({ pressed }) => [
+              pressed && styles.buttonPressed,
+            ]}
+            onPress={() => navigation.navigate("Login")}
+          >
+            <LinearGradient
+              colors={["#FF7A00", "#FF4C00"]}
+              style={styles.buttonGradient}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+            >
+              <Feather
+                name="check-circle"
+                size={typography.sizes.l}
+                color={colors.buttonPrimaryText}
+              />
+              <Text style={styles.buttonText}>Let's go</Text>
+            </LinearGradient>
+          </Pressable>
+        </View>
 
         <Text style={styles.termsText}>
           By continuing, you acknowledge agreeing to our{"\n"}
@@ -69,9 +78,9 @@ const styles = StyleSheet.create({
   logoContainer: {
     position: "absolute",
     top: 78,
-    left: 128,
-    width: 138,
-    height: 46,
+    left: 0,
+    right: 0,
+    alignItems: "center",
   },
   content: {
     position: "absolute",
@@ -115,21 +124,23 @@ const styles = StyleSheet.create({
     left: 24,
     width: 345,
   },
-  button: {
-    backgroundColor: colors.buttonPrimary,
+  buttonShadow: {
+    backgroundColor: "#D93A00",
+    borderRadius: spacing.inputRadius,
+    paddingBottom: 8,
+    marginBottom: spacing.xl,
+    width: 345,
+  },
+  buttonGradient: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    width: 345,
-    height: 58,
+    width: "100%",
+    height: 52,
     borderRadius: spacing.inputRadius,
-    gap: 2,
-    marginBottom: spacing.xl,
-    borderBottomWidth: 4,
-    borderBottomColor: colors.primaryDark,
+    gap: 4,
   },
   buttonPressed: {
-    borderBottomWidth: 0,
     transform: [{ translateY: 4 }],
   },
   buttonText: {

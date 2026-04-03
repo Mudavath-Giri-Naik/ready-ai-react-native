@@ -20,7 +20,9 @@ export const SplashScreen = () => {
 
   return (
     <View style={styles.container}>
-      <AppLogo />
+      <View style={styles.logoPosition}>
+        <AppLogo size="lg" />
+      </View>
     </View>
   );
 };
@@ -28,9 +30,11 @@ export const SplashScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
     backgroundColor: colors.background,
   },
-
+  logoPosition: {
+    position: "absolute",
+    top: 396,
+    left: 107,
+  },
 });

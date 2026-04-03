@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, Pressable } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { LinearGradient } from "expo-linear-gradient";
 import { KeyMoment } from "@/features/session-result/types";
 import { typography } from "@/theme/typography";
 
@@ -34,8 +35,16 @@ export const KeyMomentsTab = ({ keyMoments, audioDurationSeconds }: KeyMomentsTa
         </Pressable>
         <View style={styles.playerContent}>
           <Text style={styles.playerLabel}>Mock Interview</Text>
-          <View style={styles.progressTrack}>
-            <View style={styles.progressFill} />
+          <View style={styles.progressTrackWrapper}>
+            <View style={styles.progressTrackBackground} />
+            <View style={styles.progressFillShadow}>
+              <LinearGradient
+                colors={["#FF7A00", "#FF4C00"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                style={styles.progressFillGradient}
+              />
+            </View>
           </View>
           <View style={styles.timeRow}>
             <Text style={styles.timeText}>00:00</Text>
@@ -98,20 +107,31 @@ const styles = StyleSheet.create({
     color: PLAYER.labelColor,
     marginBottom: 2,
   },
-  progressTrack: {
+  progressTrackWrapper: {
     width: "100%",
+    height: 10,
+    justifyContent: "center",
+  },
+  progressTrackBackground: {
+    position: "absolute",
+    left: 0,
+    right: 0,
     height: 8,
     backgroundColor: PLAYER.trackBg,
-    borderRadius: 4,
-    borderWidth: 1,
-    borderColor: "#FFBE8C",
-    overflow: "hidden",
+    borderRadius: 10,
   },
-  progressFill: {
+  progressFillShadow: {
+    position: "absolute",
+    left: 0,
     width: "40%",
-    height: "100%",
-    backgroundColor: PLAYER.fillBg,
-    borderRadius: 4,
+    height: 8,
+    backgroundColor: "#D93A00",
+    borderRadius: 10,
+    paddingBottom: 2,
+  },
+  progressFillGradient: {
+    flex: 1,
+    borderRadius: 5,
   },
   timeRow: {
     flexDirection: "row",

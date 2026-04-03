@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, TextInput, Pressable } from "react-native";
 import { CommonActions, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import Feather from "@expo/vector-icons/Feather";
+import { LinearGradient } from "expo-linear-gradient";
 import { AuthStackParamList } from "@/navigation/types";
 import { typography } from "@/theme/typography";
 
@@ -123,9 +124,20 @@ export const LoginScreen = () => {
         </View>
       </View>
 
-      <Pressable style={styles.button} onPress={handleContinue}>
-        <Text style={styles.buttonText}>Continue</Text>
-      </Pressable>
+      <View style={styles.buttonWrapper}>
+        <View style={styles.buttonShadow}>
+          <Pressable onPress={handleContinue}>
+            <LinearGradient
+              colors={["#FF7A00", "#FF4C00"]}
+              style={styles.buttonGradient}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+            >
+              <Text style={styles.buttonText}>Continue</Text>
+            </LinearGradient>
+          </Pressable>
+        </View>
+      </View>
     </View>
   );
 };
@@ -272,27 +284,27 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  button: {
+  buttonWrapper: {
     position: "absolute",
     bottom: 34,
     left: 16,
     right: 16,
-    height: 52,
+  },
+  buttonShadow: {
+    backgroundColor: "#D93A00",
     borderRadius: 12,
-    backgroundColor: COLORS.orange,
+    paddingBottom: 6,
+  },
+  buttonGradient: {
+    height: 48,
+    borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.2,
-    shadowRadius: 0,
-    elevation: 8,
   },
   buttonText: {
-    fontFamily: "Inter_500Medium",
-    fontSize: 14,
-    lineHeight: 20,
-    letterSpacing: -0.14,
+    fontFamily: typography.fonts.inter.semiBold,
+    fontSize: 16,
+    letterSpacing: -0.16,
     color: COLORS.white,
   },
 });

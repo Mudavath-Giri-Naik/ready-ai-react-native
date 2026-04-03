@@ -11,6 +11,11 @@ import {
   Inter_800ExtraBold,
   Inter_900Black,
 } from "@expo-google-fonts/inter";
+import {
+  Onest_700Bold,
+  Onest_800ExtraBold,
+  Onest_900Black,
+} from "@expo-google-fonts/onest";
 import { RootNavigator } from "@/navigation/root-navigator";
 
 export default function App() {
@@ -22,6 +27,9 @@ export default function App() {
     Inter_700Bold,
     Inter_800ExtraBold,
     Inter_900Black,
+    Onest_700Bold,
+    Onest_800ExtraBold,
+    Onest_900Black,
   });
 
   if (!fontsLoaded) return null;

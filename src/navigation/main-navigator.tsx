@@ -1,4 +1,6 @@
 import { View, Text, Pressable, StyleSheet } from "react-native";
+import Animated, { useAnimatedStyle } from "react-native-reanimated";
+import { LinearGradient } from "expo-linear-gradient";
 import {
   createBottomTabNavigator,
   BottomTabBarProps,
@@ -9,6 +11,7 @@ import { HomeScreen } from "@/features/home/screens/home-screen";
 import { StoreScreen } from "@/features/store/screens/store-screen";
 import { SettingsScreen } from "@/features/settings/screens/settings-screen";
 import { typography } from "@/theme/typography";
+import { TabBarProvider, useTabBarContext } from "./tab-bar-context";
 
 const TAB = {
   activeColor: "#FF7800",
@@ -34,6 +37,14 @@ const TAB_CONFIG: Record<string, TabConfig> = {
 };
 
 const CustomTabBar = ({ state, navigation }: BottomTabBarProps) => {
+  const { tabBarTranslateY } = useTabBarContext();
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: tabBarTranslateY.value }],
+    };
+  });
+
   const currentRouteName = state.routes[state.index].name;
   if (currentRouteName === "Settings") {
     return null;
@@ -61,8 +72,17 @@ const CustomTabBar = ({ state, navigation }: BottomTabBarProps) => {
   const storeRoute = state.routes.find((r) => r.name === "Store");
 
   return (
-    <View style={tabStyles.wrapper}>
-      {/* Left Box (Home & Settings) */}
+    <>
+      <Animated.View style={[tabStyles.gradientWrapper, animatedStyle]} pointerEvents="none">
+        <LinearGradient
+          colors={['transparent', 'rgba(255,255,255,0.85)', '#FFFFFF', '#FFFFFF']}
+          locations={[0, 0.4, 0.8, 1]}
+          style={StyleSheet.absoluteFill}
+        />
+      </Animated.View>
+
+      <Animated.View style={[tabStyles.wrapper, animatedStyle]} pointerEvents="box-none">
+        {/* Left Box (Home & Settings) */}
       <View style={tabStyles.leftShadow}>
         <View style={tabStyles.leftInner}>
           <Pressable
@@ -100,6 +120,7 @@ const CustomTabBar = ({ state, navigation }: BottomTabBarProps) => {
               />
             </View>
             <Text
+              numberOfLines={1}
               style={[
                 tabStyles.label,
                 isFocused("Settings") && tabStyles.labelActive,
@@ -125,42 +146,56 @@ const CustomTabBar = ({ state, navigation }: BottomTabBarProps) => {
           </Pressable>
         </View>
       </View>
-    </View>
+    </Animated.View>
+    </>
   );
 };
 
 const tabStyles = StyleSheet.create({
+  gradientWrapper: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 140,
+    pointerEvents: "none",
+  },
   wrapper: {
     position: "absolute",
     bottom: 24,
-    left: 16,
-    right: 16,
+    alignSelf: "center",
+    left: 0,
+    right: 0,
+    height: 72,
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center",
-    gap: 16,
+    alignItems: "stretch",
+    paddingLeft: 16,
+    paddingRight: 16,
+    gap: 8,
   },
   leftShadow: {
-    width: 172,
-    height: 68,
+    height: 72,
     borderRadius: 99999,
     backgroundColor: TAB.barBorder,
     paddingBottom: 4,
   },
   leftInner: {
-    flex: 1,
+    height: 68,
     flexDirection: "row",
     backgroundColor: "#FFFFFF",
     borderRadius: 99999,
     borderWidth: 1,
     borderColor: TAB.barBorder,
-    justifyContent: "space-evenly",
     alignItems: "center",
+    gap: 24,
+    paddingHorizontal: 8,
   },
   storeShadow: {
+    height: 72,
     backgroundColor: "#B2D9FF",
     borderRadius: 99999,
-    paddingBottom: 4, // X=0, Y=4 solid shadow equivalent
+    paddingBottom: 4,
   },
   storeInner: {
     width: 68,
@@ -178,9 +213,13 @@ const tabStyles = StyleSheet.create({
     alignItems: "center",
   },
   tab: {
+    height: 58,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 8,
+    paddingTop: 8,
+    paddingRight: 13,
+    paddingBottom: 8,
+    paddingLeft: 13,
     gap: 4,
   },
   storeTab: {
@@ -225,13 +264,15 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 
 export const MainNavigator = () => {
   return (
-    <Tab.Navigator
-      tabBar={(props) => <CustomTabBar {...props} />}
-      screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: '#FFFFFF' } }}
-    >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
-      <Tab.Screen name="Store" component={StoreScreen} />
-    </Tab.Navigator>
+    <TabBarProvider>
+      <Tab.Navigator
+        tabBar={(props) => <CustomTabBar {...props} />}
+        screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: '#FFFFFF' } }}
+      >
+        <Tab.Screen name="Home" component={HomeScreen} />
+        <Tab.Screen name="Settings" component={SettingsScreen} />
+        <Tab.Screen name="Store" component={StoreScreen} />
+      </Tab.Navigator>
+    </TabBarProvider>
   );
 };

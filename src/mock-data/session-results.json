@@ -1,0 +1,223 @@
+{
+  "q1": {
+    "questionId": "q1",
+    "questionText": "API latency is variable & app is sluggish. How do you design UI safely?",
+    "companyName": "PhonePe",
+    "companyLogoUrl": "https://www.google.com/s2/favicons?domain=phonepe.com&sz=256",
+    "smartSummary": {
+      "whatWorkedWell": [
+        "Clearly identified the problem as a network reliability issue rather than a UI rendering issue",
+        "Proposed optimistic UI updates with rollback — a production-grade pattern",
+        "Mentioned skeleton screens and shimmer loaders to handle perceived performance",
+        "Correctly brought up retry logic with exponential backoff for failed requests"
+      ],
+      "overallTakeaways": [
+        "Strengthen your answer by quantifying thresholds — e.g. 'show skeleton after 300ms, error state after 5s'",
+        "Consider mentioning offline-first architecture and local caching strategies like React Query or SWR",
+        "Next time, structure your answer: Problem → Approach → Trade-offs → Monitoring"
+      ]
+    },
+    "keyMoments": [
+      { "timestamp": "00:18", "description": "Strong opening — immediately framed the problem around user perception, not raw latency", "type": "positive" },
+      { "timestamp": "00:47", "description": "Mentioned optimistic UI updates with a concrete example of a payment confirmation flow", "type": "positive" },
+      { "timestamp": "01:12", "description": "Hesitated when asked about error boundary strategies — could have been more specific", "type": "negative" },
+      { "timestamp": "01:37", "description": "Correctly identified that skeleton screens reduce perceived load time by up to 40%", "type": "positive" },
+      { "timestamp": "02:05", "description": "Did not mention request cancellation or debouncing for rapid user interactions", "type": "negative" },
+      { "timestamp": "02:41", "description": "Wrapped up well by connecting the solution back to business impact — fewer drop-offs", "type": "positive" }
+    ],
+    "audioDurationSeconds": 187
+  },
+  "q2": {
+    "questionId": "q2",
+    "questionText": "Design a distributed rate limiter that works across multiple data centers.",
+    "companyName": "Amazon",
+    "companyLogoUrl": "https://www.google.com/s2/favicons?domain=amazon.in&sz=256",
+    "smartSummary": {
+      "whatWorkedWell": [
+        "Correctly identified Token Bucket and Sliding Window as viable algorithms",
+        "Mentioned Redis as a centralized counter store — a real-world production choice",
+        "Brought up the challenge of clock synchronization across data centers",
+        "Discussed graceful degradation when the rate limiter itself is unavailable"
+      ],
+      "overallTakeaways": [
+        "Dive deeper into consistency vs availability trade-offs for distributed counters",
+        "Mention sticky sessions or local + global rate limiting as a hybrid approach",
+        "Quantify — e.g. '1000 req/s per user, 50K req/s globally' to show practical thinking"
+      ]
+    },
+    "keyMoments": [
+      { "timestamp": "00:22", "description": "Immediately clarified scope — per-user vs per-API vs global rate limiting", "type": "positive" },
+      { "timestamp": "00:55", "description": "Drew a clear comparison between Token Bucket and Leaky Bucket algorithms", "type": "positive" },
+      { "timestamp": "01:30", "description": "Missed the opportunity to discuss race conditions in distributed counter increments", "type": "negative" },
+      { "timestamp": "02:10", "description": "Proposed a Redis Lua script for atomic increment — excellent production insight", "type": "positive" },
+      { "timestamp": "02:45", "description": "Did not address how to handle rate limit headers in HTTP responses", "type": "negative" },
+      { "timestamp": "03:15", "description": "Strong finish — discussed monitoring dashboards to track rate limit violations", "type": "positive" }
+    ],
+    "audioDurationSeconds": 210
+  },
+  "q3": {
+    "questionId": "q3",
+    "questionText": "How would you optimize a search autocomplete system for 1 billion users?",
+    "companyName": "Google",
+    "companyLogoUrl": "https://www.google.com/s2/favicons?domain=google.com&sz=256",
+    "smartSummary": {
+      "whatWorkedWell": [
+        "Proposed a Trie data structure with frequency-based ranking — textbook correct",
+        "Mentioned pre-computed top-K results for common prefixes to reduce latency",
+        "Discussed CDN caching for popular queries as a scaling strategy",
+        "Brought up personalization using user search history"
+      ],
+      "overallTakeaways": [
+        "Consider discussing the data pipeline — how search logs are aggregated and fed back into the Trie",
+        "Mention sharding strategies for the Trie across multiple servers",
+        "Talk about debouncing on the client side to reduce unnecessary backend calls"
+      ]
+    },
+    "keyMoments": [
+      { "timestamp": "00:15", "description": "Started with requirements clarification — latency target under 100ms", "type": "positive" },
+      { "timestamp": "00:50", "description": "Explained Trie traversal clearly with a whiteboard-style walkthrough", "type": "positive" },
+      { "timestamp": "01:25", "description": "Overlooked the challenge of handling typos and fuzzy matching in autocomplete", "type": "negative" },
+      { "timestamp": "01:55", "description": "Proposed a two-tier caching strategy — in-memory LRU and distributed Redis cache", "type": "positive" },
+      { "timestamp": "02:30", "description": "Did not discuss A/B testing for ranking algorithm improvements", "type": "negative" },
+      { "timestamp": "03:10", "description": "Concluded with a solid scalability analysis — horizontal sharding by prefix range", "type": "positive" }
+    ],
+    "audioDurationSeconds": 225
+  },
+  "q4": {
+    "questionId": "q4",
+    "questionText": "Walk me through how you would design a collaborative document editing system like Google Docs.",
+    "companyName": "Microsoft",
+    "companyLogoUrl": "https://www.google.com/s2/favicons?domain=microsoft.com&sz=256",
+    "smartSummary": {
+      "whatWorkedWell": [
+        "Identified OT (Operational Transformation) and CRDT as the two main approaches",
+        "Explained WebSocket connections for real-time collaboration clearly",
+        "Discussed cursor presence and awareness features for multi-user editing",
+        "Mentioned conflict resolution strategies with practical examples"
+      ],
+      "overallTakeaways": [
+        "Compare OT vs CRDT trade-offs more explicitly — consistency vs complexity",
+        "Address offline editing and sync-on-reconnect scenarios",
+        "Discuss the storage layer — how document versions and history are persisted"
+      ]
+    },
+    "keyMoments": [
+      { "timestamp": "00:20", "description": "Good opening — framed the problem around real-time sync and eventual consistency", "type": "positive" },
+      { "timestamp": "01:00", "description": "Explained OT with a clear insert/delete example — very effective communication", "type": "positive" },
+      { "timestamp": "01:45", "description": "Struggled to articulate how CRDTs handle concurrent edits without a central server", "type": "negative" },
+      { "timestamp": "02:20", "description": "Proposed a smart diff algorithm for minimizing data transfer over WebSocket", "type": "positive" },
+      { "timestamp": "03:00", "description": "Did not address permission and access control for shared documents", "type": "negative" },
+      { "timestamp": "03:50", "description": "Strong conclusion — mentioned revision history and undo/redo as critical features", "type": "positive" }
+    ],
+    "audioDurationSeconds": 260
+  },
+  "q5": {
+    "questionId": "q5",
+    "questionText": "How do you handle a flash sale with 10 million concurrent users hitting the checkout endpoint?",
+    "companyName": "Flipkart",
+    "companyLogoUrl": "https://www.google.com/s2/favicons?domain=flipkart.com&sz=256",
+    "smartSummary": {
+      "whatWorkedWell": [
+        "Proposed a queue-based architecture to handle traffic spikes gracefully",
+        "Mentioned inventory pre-allocation with distributed locks to prevent overselling",
+        "Discussed CDN and static asset optimization to reduce origin server load",
+        "Brought up database read replicas and caching layers"
+      ],
+      "overallTakeaways": [
+        "Address the virtual waiting room pattern — used by Flipkart during Big Billion Days",
+        "Discuss circuit breakers and bulkheads to isolate checkout from other services",
+        "Mention load testing strategies — how would you simulate 10M concurrent users?"
+      ]
+    },
+    "keyMoments": [
+      { "timestamp": "00:25", "description": "Framed the problem well — distinguished between read-heavy browsing and write-heavy checkout", "type": "positive" },
+      { "timestamp": "01:05", "description": "Proposed message queues (Kafka/SQS) for async order processing — production-grade", "type": "positive" },
+      { "timestamp": "01:40", "description": "Was vague about how to handle payment failures and rollback inventory reservation", "type": "negative" },
+      { "timestamp": "02:15", "description": "Mentioned Redis-based distributed locks for inventory — correct approach", "type": "positive" },
+      { "timestamp": "02:50", "description": "Did not discuss idempotency for payment retries — a critical oversight", "type": "negative" },
+      { "timestamp": "03:20", "description": "Wrapped up with monitoring and alerting — mentioned Grafana dashboards for real-time tracking", "type": "positive" }
+    ],
+    "audioDurationSeconds": 215
+  },
+  "q6": {
+    "questionId": "q6",
+    "questionText": "Design a real-time order tracking system that updates delivery location every 5 seconds.",
+    "companyName": "Swiggy",
+    "companyLogoUrl": "https://www.google.com/s2/favicons?domain=swiggy.com&sz=256",
+    "smartSummary": {
+      "whatWorkedWell": [
+        "Correctly identified WebSocket/SSE for pushing real-time location updates to clients",
+        "Proposed geohashing for efficient location indexing and proximity queries",
+        "Discussed battery optimization strategies for the delivery rider's mobile app",
+        "Mentioned fallback to polling when WebSocket connections are unreliable"
+      ],
+      "overallTakeaways": [
+        "Discuss data retention — how long do you store historical location traces?",
+        "Address privacy and security concerns around sharing live location",
+        "Mention ETA prediction models that combine location data with traffic patterns"
+      ]
+    },
+    "keyMoments": [
+      { "timestamp": "00:18", "description": "Started with a clear system boundary — rider app, backend, customer app", "type": "positive" },
+      { "timestamp": "00:52", "description": "Proposed a pub/sub model with Redis channels per order — scalable design", "type": "positive" },
+      { "timestamp": "01:28", "description": "Did not discuss how to handle GPS drift and noisy location data", "type": "negative" },
+      { "timestamp": "01:55", "description": "Mentioned using Kafka for event streaming and async processing of location updates", "type": "positive" },
+      { "timestamp": "02:20", "description": "Overlooked the challenge of map rendering performance on low-end devices", "type": "negative" }
+    ],
+    "audioDurationSeconds": 165
+  },
+  "q7": {
+    "questionId": "q7",
+    "questionText": "Tell me about a time you had to make a critical decision with incomplete information.",
+    "companyName": "Amazon",
+    "companyLogoUrl": "https://www.google.com/s2/favicons?domain=amazon.in&sz=256",
+    "smartSummary": {
+      "whatWorkedWell": [
+        "Used the STAR framework effectively — Situation, Task, Action, Result",
+        "Chose a relatable scenario about a production incident during peak traffic",
+        "Clearly articulated the risks considered before making the decision",
+        "Showed strong ownership by mentioning post-mortem and prevention steps"
+      ],
+      "overallTakeaways": [
+        "Quantify the impact more — e.g. 'saved 2 hours of downtime affecting 50K users'",
+        "Mention what data you wished you had and how you'd set up monitoring to get it next time",
+        "Tie the story back to Amazon's leadership principle: Bias for Action"
+      ]
+    },
+    "keyMoments": [
+      { "timestamp": "00:12", "description": "Set the scene clearly — a Friday evening deployment with unexpected failures", "type": "positive" },
+      { "timestamp": "00:40", "description": "Articulated the decision fork — rollback immediately vs hotfix in production", "type": "positive" },
+      { "timestamp": "01:10", "description": "Could have been more specific about what data was missing and why", "type": "negative" },
+      { "timestamp": "01:35", "description": "Showed leadership by coordinating with on-call team and communicating status to stakeholders", "type": "positive" },
+      { "timestamp": "02:00", "description": "Strong ending — described the post-mortem and three concrete preventive actions taken", "type": "positive" }
+    ],
+    "audioDurationSeconds": 142
+  },
+  "q8": {
+    "questionId": "q8",
+    "questionText": "Given an array of integers, return indices of two numbers that add up to a target. Can you do it in O(n)?",
+    "companyName": "Google",
+    "companyLogoUrl": "https://www.google.com/s2/favicons?domain=google.com&sz=256",
+    "smartSummary": {
+      "whatWorkedWell": [
+        "Immediately identified the brute force O(n²) approach and its limitations",
+        "Proposed the hashmap approach for O(n) time complexity — correct optimal solution",
+        "Walked through the algorithm step by step with a concrete example",
+        "Correctly handled edge cases — duplicate values and no valid pair"
+      ],
+      "overallTakeaways": [
+        "Discuss space complexity trade-off — O(n) extra space for the hashmap",
+        "Mention the sorted array + two-pointer approach as an alternative for O(1) space",
+        "Practice thinking aloud — there were a few silent pauses that could be filled with reasoning"
+      ]
+    },
+    "keyMoments": [
+      { "timestamp": "00:10", "description": "Asked clarifying questions — can the same element be used twice? Are there always valid pairs?", "type": "positive" },
+      { "timestamp": "00:35", "description": "Coded the brute force solution correctly in under 30 seconds — good baseline", "type": "positive" },
+      { "timestamp": "01:00", "description": "Transitioned to the optimal hashmap approach smoothly", "type": "positive" },
+      { "timestamp": "01:25", "description": "Minor syntax error in the hashmap lookup — self-corrected quickly", "type": "negative" },
+      { "timestamp": "01:45", "description": "Tested the solution with two examples and an edge case — thorough verification", "type": "positive" }
+    ],
+    "audioDurationSeconds": 130
+  }
+}

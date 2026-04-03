@@ -1,17 +1,47 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { StyleSheet, Text, View, Pressable, ScrollView } from "react-native";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { FlashList } from "@shopify/flash-list";
+import Animated, { useAnimatedScrollHandler, withTiming, useSharedValue, useAnimatedStyle } from "react-native-reanimated";
 import Feather from "@expo/vector-icons/Feather";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { Image } from "expo-image";
 import { AppLogo } from "@/components/ui/app-logo";
-import { QuestionCard } from "@/features/home/components/question-card";
+import { QuestionCard, getColors, CardVariant } from "@/features/home/components/question-card";
 import { RootStackParamList } from "@/navigation/types";
 import { Question } from "@/features/home/types";
 import { colors } from "@/theme/colors";
 import { spacing } from "@/theme/spacing";
 import { typography } from "@/theme/typography";
 import questionsData from "@/mock-data/questions.json";
+import { useTabBarContext } from "@/navigation/tab-bar-context";
+
+const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
+
+const AnimatedCell = ({ children, isSelected, traceId }: { children: React.ReactNode, isSelected: boolean, traceId: string }) => {
+  const translateY = useSharedValue(40);
+  const opacity = useSharedValue(0.2);
+
+  useEffect(() => {
+    translateY.value = 40;
+    opacity.value = 0.2;
+    translateY.value = withTiming(0, { duration: 400 });
+    opacity.value = withTiming(1, { duration: 450 });
+  }, [traceId]); // Recycles flawlessly with FlashList
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [{ translateY: translateY.value }],
+    zIndex: isSelected ? 1000 : 1,
+    elevation: isSelected ? 1000 : 1
+  }));
+
+  return (
+    <Animated.View style={animatedStyle}>
+      {children}
+    </Animated.View>
+  );
+};
 
 const HOME = {
   streakBg: "#57D997",
@@ -36,11 +66,64 @@ interface ListItem {
   questionIndex?: number;
 }
 
+const AnimatedSocialProof = ({ initialCount, questionNumber }: { initialCount: number, questionNumber: number }) => {
+  const [count, setCount] = useState(initialCount);
+  const scale = useSharedValue(1);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCount(prev => prev + Math.floor(Math.random() * 2) + 1);
+      scale.value = withTiming(1.3, { duration: 150 }, () => {
+        scale.value = withTiming(1, { duration: 150 });
+      });
+    }, 10000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  return (
+    <View style={styles.socialRow}>
+      <Ionicons name="flag" size={18} color={HOME.socialColor} />
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <Animated.Text style={[styles.socialText, animatedStyle]}>
+          {count.toLocaleString()}
+        </Animated.Text>
+        <Text style={styles.socialText}>
+          {` users completed Question ${questionNumber} today`}
+        </Text>
+      </View>
+      <Ionicons name="flag" size={18} color={HOME.socialColor} />
+    </View>
+  );
+};
+
 export const HomeScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
     null
   );
+
+  const { tabBarTranslateY } = useTabBarContext();
+  const lastScrollY = useSharedValue(0);
+
+  const handleScroll = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      const currentScrollY = event.contentOffset.y;
+      
+      if (currentScrollY <= 0) {
+        tabBarTranslateY.value = withTiming(0, { duration: 200 });
+      } else if (currentScrollY > lastScrollY.value + 0.5) {
+        tabBarTranslateY.value = withTiming(150, { duration: 200 });
+      } else if (currentScrollY < lastScrollY.value - 0.5) {
+        tabBarTranslateY.value = withTiming(0, { duration: 200 });
+      }
+      
+      lastScrollY.value = currentScrollY;
+    },
+  });
 
   const listData = useMemo(() => {
     const items: ListItem[] = [];
@@ -70,44 +153,102 @@ export const HomeScreen = () => {
   );
 
   const socialProofQuestion = questions[SOCIAL_PROOF_INDEX - 1];
-  const socialProofText = socialProofQuestion
-    ? `${socialProofQuestion.completedTodayCount.toLocaleString()} users completed Question ${socialProofQuestion.questionNumber} today`
-    : "";
 
   const renderItem = useCallback(
     ({ item }: { item: ListItem }) => {
       if (item.type === "socialProof") {
         return (
-          <View style={styles.socialRow}>
-            <View style={styles.socialDash} />
-            <Text style={styles.socialText}>{` ${socialProofText} `}</Text>
-            <View style={styles.socialDash} />
-          </View>
+          <AnimatedCell isSelected={false} traceId="socialProof">
+            {socialProofQuestion ? (
+              <AnimatedSocialProof 
+                initialCount={socialProofQuestion.completedTodayCount} 
+                questionNumber={socialProofQuestion.questionNumber} 
+              />
+            ) : null}
+          </AnimatedCell>
         );
       }
 
       const q = item.question!;
       const idx = item.questionIndex!;
-      const variant =
+      const variant: CardVariant =
         idx === 0
-          ? ("done" as const)
+          ? "done"
           : idx === 1
-            ? ("start" as const)
-            : ("upcoming" as const);
+            ? "start"
+            : "upcoming";
 
-      const paddings = [48, 80, 120, 160, 120, 80, 40, 80, 120, 160];
+      const paddings = [48, 80, 120, 160, 120, 80, 48, 80, 120, 160];
       const pl = paddings[idx % paddings.length];
+      const mb = 8;
+      const isSelected = selectedQuestion?.id === q.id;
+      const cardColors = getColors(variant);
 
       return (
-        <QuestionCard
-          question={q}
-          variant={variant}
-          onPress={() => handleQuestionPress(q)}
-          paddingLeft={pl}
-        />
+        <AnimatedCell isSelected={isSelected} traceId={q.id}>
+          <QuestionCard
+            question={q}
+            variant={variant}
+            onPress={() => handleQuestionPress(q)}
+            marginBottom={mb}
+            paddingLeft={pl}
+            isSelected={isSelected}
+            hideStartBubble={!!selectedQuestion}
+          />
+          {isSelected && (
+            <View
+              style={[styles.expandedWrapper, { left: 24, top: 88 }]}
+            >
+              <View style={styles.expandedTailBox}>
+                <View style={[styles.expandedTail, { borderBottomColor: cardColors.badgeBg }]} />
+              </View>
+              <View style={[styles.expandedCard, { backgroundColor: cardColors.badgeBg }]}>
+                <Text style={styles.expandedQuestion}>
+                  {q.text}
+                </Text>
+                <View style={styles.expandedMeta}>
+                  <View style={styles.expandedCompanyRow}>
+                    <Text style={styles.expandedAskedBy}>
+                      Asked by {q.companyName}
+                    </Text>
+                    <Image
+                      source={{ uri: q.companyLogoUrl }}
+                      style={styles.expandedLogo}
+                      cachePolicy="memory-disk"
+                    />
+                  </View>
+                  <View style={styles.expandedDuration}>
+                    <Feather name="clock" size={14} color="#48484A" />
+                    <Text style={styles.expandedDurationText}>
+                      {q.durationMinutes} mins
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.expandedButtonsContainer}>
+                  <View style={styles.feedbackShadow}>
+                    <Pressable
+                      style={styles.feedbackButton}
+                      onPress={() => handleFeedbackPress(q.id)}
+                    >
+                      <Text style={styles.feedbackButtonText}>FEEDBACK</Text>
+                    </Pressable>
+                  </View>
+
+                  <View style={styles.aiShadow}>
+                    <Pressable style={styles.aiButton}>
+                      <Feather name="lock" size={14} color={colors.textInverse} />
+                      <Text style={styles.aiButtonText}>AI VS AI (LISTEN)</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </View>
+            </View>
+          )}
+        </AnimatedCell>
       );
     },
-    [socialProofText, handleQuestionPress]
+    [socialProofQuestion, handleQuestionPress, handleFeedbackPress, selectedQuestion]
   );
 
   return (
@@ -117,7 +258,7 @@ export const HomeScreen = () => {
         <View style={styles.rhs}>
           <View style={styles.streakShadow}>
             <View style={styles.streakCounter}>
-              <Feather name="zap" size={18} color={colors.textInverse} />
+              <Ionicons name="flash" size={18} color={colors.textInverse} />
               <Text style={styles.streakNumber}>8</Text>
             </View>
           </View>
@@ -148,64 +289,26 @@ export const HomeScreen = () => {
         </View>
       </View>
 
-      <FlashList
-        data={listData}
-        renderItem={renderItem}
-        keyExtractor={(item, index) =>
-          item.type === "socialProof"
-            ? "social-proof"
-            : item.question?.id ?? String(index)
-        }
-        getItemType={(item) => item.type}
-        contentContainerStyle={styles.listContent}
-      />
+      <Pressable
+        style={{ flex: 1 }}
+        onPress={selectedQuestion ? handleCloseOverlay : undefined}
+      >
+        <AnimatedFlashList
+          data={listData}
+          extraData={selectedQuestion?.id}
+          renderItem={renderItem as any}
+          keyExtractor={(item: any, index: number) =>
+            item.type === "socialProof"
+              ? "social-proof"
+              : item.question?.id ?? String(index)
+          }
+          getItemType={(item: any) => item.type}
+          contentContainerStyle={styles.listContent}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+        />
+      </Pressable>
 
-      {selectedQuestion && (
-        <Pressable style={styles.overlay} onPress={handleCloseOverlay}>
-          <Pressable
-            style={styles.expandedCard}
-            onPress={(e) => e.stopPropagation()}
-          >
-            <Text style={styles.expandedQuestion}>
-              {selectedQuestion.text}
-            </Text>
-            <View style={styles.expandedMeta}>
-              <View style={styles.expandedCompanyRow}>
-                <Text style={styles.expandedAskedBy}>
-                  Asked by {selectedQuestion.companyName}
-                </Text>
-                <Image
-                  source={{ uri: selectedQuestion.companyLogoUrl }}
-                  style={styles.expandedLogo}
-                  cachePolicy="memory-disk"
-                />
-              </View>
-              <View style={styles.expandedDuration}>
-                <Feather name="clock" size={14} color="#48484A" />
-                <Text style={styles.expandedDurationText}>
-                  {selectedQuestion.durationMinutes} mins
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.feedbackShadow}>
-              <Pressable
-                style={styles.feedbackButton}
-                onPress={() => handleFeedbackPress(selectedQuestion.id)}
-              >
-                <Text style={styles.feedbackButtonText}>FEEDBACK</Text>
-              </Pressable>
-            </View>
-
-            <View style={styles.aiShadow}>
-              <Pressable style={styles.aiButton}>
-                <Feather name="lock" size={14} color={colors.textInverse} />
-                <Text style={styles.aiButtonText}>AI VS AI (LISTEN)</Text>
-              </Pressable>
-            </View>
-          </Pressable>
-        </Pressable>
-      )}
     </View>
   );
 };
@@ -272,8 +375,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   courseSwitcher: {
-    paddingHorizontal: 16,
+    width: "100%",
+    height: 92,
+    paddingRight: 16,
     paddingBottom: 16,
+    paddingLeft: 16,
+    marginBottom: 8,
     justifyContent: "center",
     alignItems: "center",
     zIndex: 1,
@@ -330,34 +437,28 @@ const styles = StyleSheet.create({
     textAlign: "left",
   },
   listContent: {
-    paddingBottom: 120,
+    paddingBottom: 250,
   },
   socialRow: {
-    width: "100%",
+    width: 393,
+    height: 32,
+    paddingTop: 6,
+    paddingRight: 16,
+    paddingBottom: 6,
+    paddingLeft: 16,
+    gap: 12,
+    borderBottomWidth: 1,
     borderStyle: "dashed",
     borderColor: HOME.socialColor,
-    borderBottomWidth: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    gap: 12,
-  },
-  socialDash: {
-    flex: 0,
-    width: 20,
-    height: 1,
-    borderTopWidth: 1,
-    borderColor: HOME.socialDash,
-    borderStyle: "solid",
-    display: "none",
+    marginBottom: 8,
   },
   socialText: {
     fontSize: 14,
     letterSpacing: -0.1,
-    fontWeight: "700",
-    fontFamily: typography.fonts.inter.bold,
+    fontFamily: typography.fonts.inter.extraBold,
     color: HOME.socialColor,
     textAlign: "center",
   },
@@ -367,11 +468,32 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: spacing.screenPadding,
   },
+  expandedWrapper: {
+    position: "absolute",
+    width: 345,
+    paddingTop: 2,
+  },
+  expandedTailBox: {
+    width: "100%",
+    height: 10,
+    alignItems: "center",
+  },
+  expandedTail: {
+    width: 0,
+    height: 0,
+    borderLeftWidth: 10,
+    borderRightWidth: 10,
+    borderBottomWidth: 10,
+    borderStyle: "solid",
+    backgroundColor: "transparent",
+    borderLeftColor: "transparent",
+    borderRightColor: "transparent",
+  },
   expandedCard: {
-    backgroundColor: "#FFD033",
-    borderRadius: 16,
-    padding: 20,
-    gap: 16,
+    width: 345,
+    borderRadius: 12,
+    padding: 16,
+    gap: 10,
   },
   expandedQuestion: {
     fontSize: typography.sizes.l,
@@ -409,6 +531,10 @@ const styles = StyleSheet.create({
     fontFamily: typography.fonts.inter.medium,
     color: "#48484A",
   },
+  expandedButtonsContainer: {
+    width: 313,
+    gap: 10,
+  },
   feedbackShadow: {
     width: 313,
     alignSelf: "center",
@@ -435,14 +561,14 @@ const styles = StyleSheet.create({
   aiShadow: {
     width: 313,
     alignSelf: "center",
-    backgroundColor: "#BF9C26",
+    backgroundColor: "#000000",
     borderRadius: 12,
     paddingBottom: 3,
   },
   aiButton: {
     width: "100%",
     flexDirection: "row",
-    backgroundColor: "#806B26",
+    backgroundColor: "#1C1C1E",
     borderRadius: 12,
     paddingVertical: 10,
     alignItems: "center",
