@@ -92,30 +92,34 @@ export const SessionResultScreen = () => {
         {/* Tab Row */}
         <View style={styles.tabRow}>
           <Pressable
-            style={[styles.tab, activeTab === "summary" && styles.activeTab]}
+            style={styles.tab}
             onPress={() => setActiveTab("summary")}
           >
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === "summary" && styles.activeTabText,
-              ]}
-            >
-              Smart summary
-            </Text>
+            <View style={[styles.tabInner, activeTab === "summary" && styles.activeTabInner]}>
+              <Text
+                style={[
+                  styles.tabText,
+                  activeTab === "summary" && styles.activeTabText,
+                ]}
+              >
+                Smart summary
+              </Text>
+            </View>
           </Pressable>
           <Pressable
-            style={[styles.tab, activeTab === "moments" && styles.activeTab]}
+            style={styles.tab}
             onPress={() => setActiveTab("moments")}
           >
-            <Text
-              style={[
-                styles.tabText,
-                activeTab === "moments" && styles.activeTabText,
-              ]}
-            >
-              Key moments
-            </Text>
+            <View style={[styles.tabInner, activeTab === "moments" && styles.activeTabInner]}>
+              <Text
+                style={[
+                  styles.tabText,
+                  activeTab === "moments" && styles.activeTabText,
+                ]}
+              >
+                Key moments
+              </Text>
+            </View>
           </Pressable>
         </View>
 
@@ -178,7 +182,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: 0,
   },
   avatarBorder: {
     width: AVATAR_SIZE,
@@ -247,7 +251,7 @@ const styles = StyleSheet.create({
   /* ── Tabs ── */
   tabRow: {
     flexDirection: "row",
-    paddingHorizontal: 20,
+    marginHorizontal: 20,
     marginTop: 16,
     marginBottom: 8,
     borderBottomWidth: 1,
@@ -255,12 +259,15 @@ const styles = StyleSheet.create({
   },
   tab: {
     flex: 1,
-    paddingVertical: 12,
     alignItems: "center",
+  },
+  tabInner: {
+    paddingVertical: 12,
     borderBottomWidth: 2,
     borderBottomColor: "transparent",
+    marginBottom: -1, // Pull it down over the grey row border line
   },
-  activeTab: {
+  activeTabInner: {
     borderBottomColor: "#1C1C1E",
   },
   tabText: {
