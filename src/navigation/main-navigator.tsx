@@ -34,6 +34,11 @@ const TAB_CONFIG: Record<string, TabConfig> = {
 };
 
 const CustomTabBar = ({ state, navigation }: BottomTabBarProps) => {
+  const currentRouteName = state.routes[state.index].name;
+  if (currentRouteName === "Settings") {
+    return null;
+  }
+
   const isFocused = (name: string) => {
     const idx = state.routes.findIndex((r) => r.name === name);
     return state.index === idx;
@@ -153,18 +158,22 @@ const tabStyles = StyleSheet.create({
     alignItems: "center",
   },
   storeShadow: {
-    width: 68,
-    height: 68,
-    borderRadius: 34,
-    backgroundColor: TAB.barBorder,
-    paddingBottom: 4,
+    backgroundColor: "#B2D9FF",
+    borderRadius: 99999,
+    paddingBottom: 4, // X=0, Y=4 solid shadow equivalent
   },
   storeInner: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 34,
+    width: 68,
+    height: 68,
+    backgroundColor: "#E5F2FF",
+    borderRadius: 99999,
     borderWidth: 1,
-    borderColor: TAB.barBorder,
+    borderColor: "#B2D9FF",
+    paddingTop: 6,
+    paddingRight: 5,
+    paddingBottom: 6,
+    paddingLeft: 5,
+    gap: 32,
     justifyContent: "center",
     alignItems: "center",
   },

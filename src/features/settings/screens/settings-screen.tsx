@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
   trialImage: {
     position: "absolute",
     right: 0,
-    bottom: 45,
+    bottom: 55, // Shifted up by 10px
     width: 146.58,
     height: 162.48,
   },
@@ -214,6 +214,7 @@ const styles = StyleSheet.create({
     borderRadius: 11,
     paddingBottom: 4,
     width: "100%",
+    marginTop: -7, // Shifted up
   },
   trialButtonGradient: {
     borderRadius: 11,
@@ -226,8 +227,7 @@ const styles = StyleSheet.create({
   },
   trialButtonText: {
     color: "#8B5E34",
-    fontFamily: typography.fonts.inter.extraBold,
-    fontWeight: "1000",
+    fontFamily: typography.fonts.inter.black, // Absolute thickest Inter font
     fontSize: 14,
     lineHeight: 18,
     letterSpacing: 0.8,
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: "#FFFFFF",
-    borderRadius: 20,
+    borderRadius: 24,
     borderWidth: 1,
     borderColor: "#E5E5EA",
     marginBottom: 16,

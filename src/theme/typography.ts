@@ -16,6 +16,7 @@ export const typography = {
       semiBold: "Inter_600SemiBold",
       bold: "Inter_700Bold",
       extraBold: "Inter_800ExtraBold",
+      black: "Inter_900Black",
     },
     system: Platform.select({
       ios: "System",
